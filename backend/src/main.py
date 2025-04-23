@@ -1,6 +1,6 @@
 import sqlite3
 from flask import Flask, jsonify, request
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, abort
 from dataclasses import dataclass
 
 DATABASE_PATH = "../flosscaster.db"
@@ -32,6 +32,22 @@ class List(Resource):
         con.close()
         return jsonify(podcasts)
 
+class GetById(Resource):
+    def get(self):
+        id = request.args.get("id")
+        con = sqlite3.connect(DATABASE_PATH)
+        cur = con.cursor()
+        cur.execute(f"SELECT * FROM podcasts WHERE id={id}")
+        rows = cur.fetchall()
+        con.close()
+
+        assert len(rows) < 2, "Duplicate id found in database?"
+
+        if len(rows) == 0:
+            abort(404, error_message="Queried item does not exist")
+
+        return jsonify(Podcast(*rows[0]))
+
 class Create(Resource):
     def post(self):
         json = request.get_json()
@@ -51,6 +67,7 @@ class Create(Resource):
 
 api.add_resource(Ping, "/api/ping")
 api.add_resource(List, "/api/list")
+api.add_resource(GetById, "/api/get")
 api.add_resource(Create, "/api/create")
 
 if __name__ == "__main__":
