@@ -10,6 +10,7 @@ api = Api(app)
 
 @dataclass
 class Podcast:
+    id: int
     title: str
     description: str
     date: str
@@ -41,11 +42,12 @@ class Create(Resource):
 
         con = sqlite3.connect(DATABASE_PATH)
         cur = con.cursor()
-        cur.execute(f"INSERT INTO podcasts VALUES ('{title}', '{description}', '{date}')")
+        cur.execute(f"INSERT INTO podcasts (id, title, description, date) VALUES (NULL, '{title}', '{description}', '{date}')")
+        new_id = cur.lastrowid
         con.commit()
         con.close()
 
-        return "", 200
+        return f"{new_id}", 200
 
 api.add_resource(Ping, "/api/ping")
 api.add_resource(List, "/api/list")
@@ -54,6 +56,6 @@ api.add_resource(Create, "/api/create")
 if __name__ == "__main__":
     con = sqlite3.connect(DATABASE_PATH)
     cur = con.cursor()
-    cur.execute("CREATE TABLE IF NOT EXISTS podcasts(title, description, date)")
+    cur.execute("CREATE TABLE IF NOT EXISTS podcasts(id INTEGER PRIMARY KEY, title, description, date)")
     con.close()
     app.run(debug = True)
