@@ -5,5 +5,5 @@ To run the backend, simply install all necessary dependencies with `pip install 
 
 ## To-Dos
 - [x] Create endpoint for getting a specific podcast via id (also add id column to podcasts)
-- [ ] Create API documentation (with swagger? has good integration with flask)
+- [x] Create API documentation (with swagger? has good integration with flask)
 - [ ] Dockerize backend in project root
