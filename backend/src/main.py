@@ -2,11 +2,13 @@ import sqlite3
 from flask import Flask, jsonify, request
 from flask_restful import Resource, Api, abort
 from dataclasses import dataclass
+from flasgger import Swagger
 
 DATABASE_PATH = "../flosscaster.db"
 
 app = Flask(__name__)
 api = Api(app)
+swagger = Swagger(app)
 
 @dataclass
 class Podcast:
@@ -22,6 +24,43 @@ class Ping(Resource):
 
 class List(Resource):
     def get(self):
+        """Returns all podcasts metadata in the database
+        ---
+        definitions:
+            Podcast:
+                type: object
+                properties:
+                    id:
+                        type: integer
+                    title:
+                        type: string
+                    description:
+                        type: string
+                    date:
+                        type: string
+        responses:
+            200:
+                description: A list containing all podcasts
+                schema:
+                    type: array
+                    items:
+                        $ref: "#/definitions/Podcast"
+                examples:
+                    [
+                      {
+                        'id': 1,
+                        'title': '6-Sekunden Podcast',
+                        'description': 'Wir hatten keine Zeit um ein Thema anzusprechen.',
+                        'date': '2025-04-22T20:00:00Z',
+                      },
+                      {
+                        'id': 2,
+                        'title': '6-Sekunden Podcast: Part 2',
+                        'description': 'Wir hatten wieder keine Zeit um ein Thema anzusprechen.',
+                        'date': '2025-04-23T18:00:00Z',
+                      }
+                    ]
+        """
         con = sqlite3.connect(DATABASE_PATH)
         cur = con.cursor()
         cur.execute(f"SELECT * FROM podcasts")
@@ -34,7 +73,35 @@ class List(Resource):
 
 class GetById(Resource):
     def get(self):
+        """Returns all podcasts metadata in the database
+        ---
+        parameters:
+          - name: id
+            in: query
+            type: integer
+            required: true
+        responses:
+            200:
+                description: A podcast object matching the id specified in the parameter
+                schema:
+                    $ref: "#/definitions/Podcast"
+                examples:
+                  {
+                    'id': 1,
+                    'title': '6-Sekunden Podcast',
+                    'description': 'Wir hatten keine Zeit um ein Thema anzusprechen.',
+                    'date': '2025-04-22T20:00:00Z',
+                  }
+            400:
+                description: No id was provided
+            404:
+                description: Podcast was not found
+        """
         id = request.args.get("id")
+
+        if id == None:
+            abort(400, error_message="Must provide an id")
+
         con = sqlite3.connect(DATABASE_PATH)
         cur = con.cursor()
         cur.execute(f"SELECT * FROM podcasts WHERE id={id}")
@@ -50,6 +117,31 @@ class GetById(Resource):
 
 class Create(Resource):
     def post(self):
+        """Create a podcast and return the new id
+        ---
+        parameters:
+          - name: title
+            in: path
+            type: string
+            required: true
+          - name: description
+            in: path
+            type: string
+            required: true
+          - name: date
+            in: path
+            type: string
+            required: true
+        responses:
+            200:
+                description: The internal id of the newly created podcast
+                schema:
+                    type: integer
+                examples:
+                    1
+            404:
+                description: Something went wrong in the process of creating the podcast
+        """
         json = request.get_json()
 
         title = json["title"]
