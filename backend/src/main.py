@@ -4,7 +4,7 @@ from flask_restful import Resource, Api, abort
 from dataclasses import dataclass
 from flasgger import Swagger
 
-DATABASE_PATH = "../flosscaster.db"
+DATABASE_PATH = "/data/flosscaster.db"
 
 app = Flask(__name__)
 api = Api(app)
@@ -167,4 +167,4 @@ if __name__ == "__main__":
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS podcasts(id INTEGER PRIMARY KEY, title, description, date)")
     con.close()
-    app.run(debug = True)
+    app.run(host="0.0.0.0", debug = True)
