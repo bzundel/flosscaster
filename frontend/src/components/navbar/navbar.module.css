@@ -1,0 +1,22 @@
+.navbar{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  margin-top: 30px;
+}
+
+.mainHeader {
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 2rem;
+    font-weight:800;
+    text-decoration: none;
+    transition-duration: 0.5s;
+  }
+  
+.mainHeader:hover{
+    cursor: pointer;
+    font-size: 2.2rem;
+    transition-duration: 0.5s;
+  }
