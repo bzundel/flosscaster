@@ -9,13 +9,10 @@ class RSSFeedGenerator:
         self.feed_description = feed_description
         self.items = []
         self.rss_dir = 'rss'
-        self.feed_file_path = os.path.join(self.rss_dir, 'feed.xml')  # Hier wird der Pfad zur feed.xml definiert
         
         # Verzeichnis erstellen, falls es nicht existiert
         if not os.path.exists(self.rss_dir):
             os.makedirs(self.rss_dir)
-            
-        self.load_existing_feed()
 
     def add_item(self, title, description, date, enclosure_url=None, enclosure_type=None, enclosure_length=None):
         """Fügt einen neuen Artikel zum Feed hinzu."""
@@ -28,22 +25,6 @@ class RSSFeedGenerator:
             'enclosure_length': enclosure_length
         }
         self.items.append(item)
-        
-    def load_existing_feed(self):
-        """Lädt den bestehenden RSS-Feed, falls vorhanden."""
-        if os.path.exists(self.feed_file_path):
-            feed = feedparser.parse(self.feed_file_path)
-            for entry in feed.entries:
-                item = {
-                    'title': entry.title,
-                    'description': entry.description,
-                    'date': entry.published if 'published' in entry else datetime.now().isoformat(),
-                    'enclosure_url': entry.enclosure.href if 'enclosure' in entry else None,
-                    'enclosure_type': entry.enclosure.type if 'enclosure' in entry else None,
-                    'enclosure_length': entry.enclosure.length if 'enclosure' in entry else None
-                }
-                self.items.append(item)
-                print(self)
 
     def generate_feed(self):
         """Generiert den RSS-Feed und speichert ihn in einer Datei."""
@@ -58,7 +39,10 @@ class RSSFeedGenerator:
             fe.title(item['title'])
             fe.description(item['description'])
             fe.pubDate(item['date'])
-            fe.enclosure(item['enclosure_url'], item['enclosure_length'], item['enclosure_type'])
+
+            # Füge die Enclosure-Informationen hinzu, falls vorhanden
+            if item['enclosure_url']:
+                fe.enclosure(item['enclosure_url'], item['enclosure_length'], item['enclosure_type'])
 
         # RSS-Feed in einer Datei speichern
         feed_file_path = os.path.join(self.rss_dir, 'feed.xml')
