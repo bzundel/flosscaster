@@ -1,17 +1,19 @@
 from datetime import datetime, timezone
 from rss_feed_generator import RSSFeedGenerator
-# Diese datei nur als beispiel wie ich den feed generator nutzen kann
-def main():
-    # Erstellen Sie eine Instanz des RSSFeedGenerator
-    feed_generator = RSSFeedGenerator("Mein RSS Feed", "Dies ist eine Beschreibung meines RSS Feeds.")
-    
-    # Artikel hinzufügen
-    feed_generator.add_item("Erster Artikel", "Dies ist die Beschreibung des ersten Artikels.", datetime.now(timezone.utc))
-    feed_generator.add_item("Zweiter Artikel", "Dies ist die Beschreibung des zweiten Artikels.", datetime.now(timezone.utc))
-    
-    # RSS-Feed generieren
-    feed_generator.generate_feed()
+#Beispiel wie das Module verwendet weren kann
+# Erstelle eine Instanz des RSSFeedGenerator
+rss_generator = RSSFeedGenerator(feed_title='Mein RSS-Feed', feed_description='Dies ist ein Beispiel für einen RSS-Feed.')
 
-if __name__ == "__main__":
-    main()
+# Füge einen Artikel mit Enclosure hinzu
+rss_generator.add_item(
+    title='Erster Artikel',
+    description='Dies ist die Beschreibung des ersten Artikels.',
+    date = datetime.now(timezone.utc),  # Beispiel-Datum
+    enclosure_url='http://example.com/audio.mp3',  # Beispiel-URL
+    enclosure_type='audio/flac',  # Typ der Enclosure
+    enclosure_length=17  # Größe der Datei in Bytes
+)
+
+# Generiere den RSS-Feed und speichere ihn in einer Datei
+rss_generator.generate_feed()
 

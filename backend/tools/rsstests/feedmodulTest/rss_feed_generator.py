@@ -13,12 +13,15 @@ class RSSFeedGenerator:
         if not os.path.exists(self.rss_dir):
             os.makedirs(self.rss_dir)
 
-    def add_item(self, title, description, date):
+    def add_item(self, title, description, date, enclosure_url=None, enclosure_type=None, enclosure_length=None):
         """Fügt einen neuen Artikel zum Feed hinzu."""
         item = {
             'title': title,
             'description': description,
-            'date': date
+            'date': date,
+            'enclosure_url': enclosure_url,
+            'enclosure_type': enclosure_type,
+            'enclosure_length': enclosure_length
         }
         self.items.append(item)
 
@@ -35,6 +38,10 @@ class RSSFeedGenerator:
             fe.title(item['title'])
             fe.description(item['description'])
             fe.pubDate(item['date'])
+
+            # Füge die Enclosure-Informationen hinzu, falls vorhanden
+            if item['enclosure_url']:
+                fe.enclosure(item['enclosure_url'], item['enclosure_length'], item['enclosure_type'])
 
         # RSS-Feed in einer Datei speichern
         feed_file_path = os.path.join(self.rss_dir, 'feed.xml')
