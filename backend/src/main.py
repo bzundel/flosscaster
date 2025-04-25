@@ -1,3 +1,4 @@
+import os
 import sqlite3
 import datetime
 from flask import Flask, jsonify, request
@@ -5,7 +6,7 @@ from flask_restful import Resource, Api, abort
 from dataclasses import dataclass
 from flasgger import Swagger
 
-DATABASE_PATH = "/data/flosscaster.db"
+DATABASE_PATH = os.path.join(os.getenv("DATA_DIR"), "flosscaster.db")
 
 app = Flask(__name__)
 api = Api(app)
