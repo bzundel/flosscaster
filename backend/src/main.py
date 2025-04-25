@@ -1,4 +1,5 @@
 import sqlite3
+import datetime
 from flask import Flask, jsonify, request
 from flask_restful import Resource, Api, abort
 from dataclasses import dataclass
@@ -128,10 +129,6 @@ class Create(Resource):
             in: path
             type: string
             required: true
-          - name: date
-            in: path
-            type: string
-            required: true
         responses:
             200:
                 description: The internal id of the newly created podcast
@@ -146,7 +143,7 @@ class Create(Resource):
 
         title = json["title"]
         description = json["description"]
-        date = json["date"]
+        date = datetime.datetime.now().strftime("%c")
 
         con = sqlite3.connect(DATABASE_PATH)
         cur = con.cursor()
