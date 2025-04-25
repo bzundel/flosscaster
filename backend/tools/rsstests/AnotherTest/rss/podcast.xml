@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rss version="2.0">
+  <channel>
+    <title>6 Sekunden podcast</title>
+    <link>https://example.com/podcast</link>
+    <description>Dies ist ein Beispiel-Podcast.</description>
+    <language>de</language>
+    <pubDate>Mon, 01 Jan 2023 00:00:00 +0000</pubDate>
+    <lastBuildDate>Mon, 01 Jan 2023 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Die ersten 6 sekunden</title>
+      <link>https://example.com/podcast/episode1.mp3</link>
+      <description>Beschreibung der ersten Episode.</description>
+      <enclosure url="https://example.com/podcast/episode1.mp3" type="audio/mpeg"/>
+      <pubDate>Mon, 01 Jan 2023 00:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>hello</title>
+      <description>wundervoll</description>
+      <enclosure url="www.podcast.de/1.mp3" type="audio/mpeg"/>
+    </item>
+    <item>
+      <title>world</title>
+      <description>nichtsoToll</description>
+      <enclosure url="www.podcast.de/2.mp3" type="audio/mpeg"/>
+    </item>
+  </channel>
+</rss>
