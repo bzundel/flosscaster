@@ -7,7 +7,7 @@ from flask_cors import CORS
 from dataclasses import dataclass
 from flasgger import Swagger
 
-DATABASE_PATH = "../data/flosscaster.db"
+DATABASE_PATH = os.getenv("DATABASE_PATH")
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok =True)
 
@@ -97,5 +97,6 @@ api.add_resource(Create, "/api/create")
 if __name__ == "__main__":
     con = sqlite3.connect(DATABASE_PATH)
     cur = con.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS podcasts(id INTEGER PRIMARY KEY, title, description, date, filepath)")
     con.close()
     app.run(host="0.0.0.0", port = 1111, debug = True)
