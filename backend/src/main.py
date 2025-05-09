@@ -8,19 +8,15 @@ from dataclasses import dataclass
 from flasgger import Swagger
 
 DATABASE_FILE = os.getenv("DATABASE_FILE")
-UPLOAD_FOLDER = "uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok =True)
+UPLOAD_PATH = "uploads"
+
+os.makedirs(UPLOAD_PATH, exist_ok=True)
 
 app = Flask(__name__)
-CORS(app)
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 api = Api(app)
 swagger = Swagger(app)
 
-ALLOWED_EXTENSIONS = {'mp3'}
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+CORS(app)
 
 @dataclass
 class Podcast:
@@ -45,6 +41,7 @@ class List(Resource):
         podcasts = [Podcast(*row) for row in rows]
 
         con.close()
+
         return jsonify(podcasts)
 
 class GetById(Resource):
@@ -56,7 +53,7 @@ class GetById(Resource):
 
         con = sqlite3.connect(DATABASE_FILE)
         cur = con.cursor()
-        cur.execute(f"SELECT * FROM podcasts WHERE id=?",(id,))
+        cur.execute(f"SELECT * FROM podcasts WHERE id=?", (id))
         rows = cur.fetchall()
         con.close()
 
@@ -72,7 +69,7 @@ class Create(Resource):
         audio_file = request.files.get("audio")
 
         filename = f"{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}_{audio_file.filename}"
-        file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        file_path = os.path.join(UPLOAD_PATH, filename)
         audio_file.save(file_path)
 
         date = datetime.datetime.now().strftime("%c")
@@ -87,7 +84,7 @@ class Create(Resource):
 
 @app.route("/uploads/<filename>")
 def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    return send_from_directory(UPLOAD_PATH, filename)
 
 api.add_resource(Ping, "/api/ping")
 api.add_resource(List, "/api/list")
