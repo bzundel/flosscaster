@@ -7,7 +7,7 @@ from flask_cors import CORS
 from dataclasses import dataclass
 from flasgger import Swagger
 
-DATABASE_PATH = os.getenv("DATABASE_PATH")
+DATABASE_FILE = os.getenv("DATABASE_FILE")
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok =True)
 
@@ -37,7 +37,7 @@ class Ping(Resource):
 
 class List(Resource):
     def get(self):
-        con = sqlite3.connect(DATABASE_PATH)
+        con = sqlite3.connect(DATABASE_FILE)
         cur = con.cursor()
         cur.execute(f"SELECT * FROM podcasts")
 
@@ -54,7 +54,7 @@ class GetById(Resource):
         if id == None:
             abort(400, error_message="Must provide an id")
 
-        con = sqlite3.connect(DATABASE_PATH)
+        con = sqlite3.connect(DATABASE_FILE)
         cur = con.cursor()
         cur.execute(f"SELECT * FROM podcasts WHERE id=?",(id,))
         rows = cur.fetchall()
@@ -76,7 +76,7 @@ class Create(Resource):
         audio_file.save(file_path)
 
         date = datetime.datetime.now().strftime("%c")
-        con = sqlite3.connect(DATABASE_PATH)
+        con = sqlite3.connect(DATABASE_FILE)
         cur = con.cursor()
         cur.execute("INSERT INTO podcasts (id, title, description, date, filepath) VALUES (NULL, ?,?,?,?)", (title, description, date, filename))
         new_id = cur.lastrowid
@@ -95,7 +95,7 @@ api.add_resource(GetById, "/api/get")
 api.add_resource(Create, "/api/create")
 
 if __name__ == "__main__":
-    con = sqlite3.connect(DATABASE_PATH)
+    con = sqlite3.connect(DATABASE_FILE)
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS podcasts(id INTEGER PRIMARY KEY, title, description, date, filepath)")
     con.close()
