@@ -28,14 +28,6 @@
     transform: scale(1.01);
 }
 
-.podcastImage {
-    width: 220px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 12px;
-    margin-right: 1.5rem;
-  }
-
   .podcastTitle{
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
@@ -63,4 +55,93 @@
   .playButton:hover{
     font-size: 1.05rem;
     transition: 0.3s ease;
+  }
+
+  /* Upload podcast episodes section*/
+  .showUploadBtn{
+    width: 13rem;
+    margin-left: auto; 
+    height: 3em;
+    background-color: #a41045;
+    outline: none;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: 0.5s;
+    font-size: 19px;
+    font-weight: bold;
+    color:#fff;
+    border: none;
+  }
+
+  .showUploadBtn:hover{
+    box-shadow: 0 0px 18px #d6278d;
+    font-weight: 600;
+    transition: 0.5s;
+  }
+
+  .showUploadBtn:active{
+    transform: scale(0.9);
+  }
+
+  .topContainer{
+    position: fixed;
+    z-index: 1000;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+@keyframes all{
+  100%{
+    transform: translate(-50%, -50%) scale(.9);
+  }
+}
+  .top{
+    background-color: rgba(255, 200, 250, 0.1);
+    border-radius: 10px;
+    width: 400px;
+    padding: 20px;
+    position: relative;
+  }
+
+  .top h3{
+    font-size: 2.2rem;
+    font-weight: 800;
+    padding: 3% 0;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    line-height: 0.1px;
+  }
+  
+  form input{
+    padding: 10px;
+    margin: 7px 0px;
+    border: 1px solid #fff;
+    outline:none;
+    border-radius: 5px;
+  }
+  .submit{
+    display: flex;
+    outline: none;
+    border: none;
+    color: #fff;
+    font-size: 19px;
+    font-weight: bold;
+    background-color: #a41045;
+    cursor: pointer;
+    padding: 10px 25px;
+    margin-top: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+
+  .submit:active{
+    transform: scale(1.02);
+  }
+  .close{
+    position: absolute;
+    top: 2px;
+    right: 10px;
+    font-size: 40px;
+    cursor: pointer;
   }
