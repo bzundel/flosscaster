@@ -1,7 +1,8 @@
 import os
 import sqlite3
 import datetime
-from flask import Flask, jsonify, request, send_from_directory
+import uuid
+from flask import Flask, jsonify, request, send_file
 from flask_restful import Resource, Api, abort
 from flask_cors import CORS
 from dataclasses import dataclass
@@ -9,6 +10,7 @@ from flasgger import Swagger
 
 DATABASE_FILE = os.getenv("DATABASE_FILE")
 UPLOAD_PATH = "uploads"
+ALLOWED_EXTENSIONS = {".mp3"}
 
 os.makedirs(UPLOAD_PATH, exist_ok=True)
 
@@ -68,7 +70,12 @@ class Create(Resource):
         description = request.form.get("description")
         audio_file = request.files.get("audio")
 
-        filename = f"{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}_{audio_file.filename}"
+        _, extension = os.path.splitext(audio_file.filename)
+
+        if not extension.lower() in ALLOWED_EXTENSIONS:
+            abort(400, error_message="Invalid file extension")
+
+        filename = f"{str(uuid.uuid4())}{extension}"
         file_path = os.path.join(UPLOAD_PATH, filename)
         audio_file.save(file_path)
 
@@ -82,14 +89,17 @@ class Create(Resource):
 
         return f"{new_id}", 200
 
-@app.route("/uploads/<filename>")
-def uploaded_file(filename):
-    return send_from_directory(UPLOAD_PATH, filename)
+class GetFileByFilename(Resource):
+    def get(self, filename):
+        path = os.path.abspath(os.path.join(UPLOAD_PATH, filename))
+
+        return send_file(path)
 
 api.add_resource(Ping, "/api/ping")
 api.add_resource(List, "/api/list")
 api.add_resource(GetById, "/api/get")
 api.add_resource(Create, "/api/create")
+api.add_resource(GetFileByFilename, "/api/get_upload/<path:filename>")
 
 if __name__ == "__main__":
     con = sqlite3.connect(DATABASE_FILE)
