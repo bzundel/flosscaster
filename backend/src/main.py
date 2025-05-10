@@ -189,7 +189,6 @@ class GetFileByFilename(Resource):
 
         return send_file(path)
 
-api.add_resource(Ping, "/api/ping")
 api.add_resource(List, "/api/list")
 api.add_resource(GetById, "/api/get")
 api.add_resource(Create, "/api/create")
