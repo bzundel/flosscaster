@@ -30,6 +30,43 @@ class Podcast:
 
 class List(Resource):
     def get(self):
+        """Returns all podcasts metadata in the database
+        ---
+        definitions:
+            Podcast:
+                type: object
+                properties:
+                    id:
+                        type: integer
+                    title:
+                        type: string
+                    description:
+                        type: string
+                    date:
+                        type: string
+        responses:
+            200:
+                description: A list containing all podcasts
+                schema:
+                    type: array
+                    items:
+                        $ref: "#/definitions/Podcast"
+                examples:
+                    [
+                      {
+                        'id': 1,
+                        'title': '6-Sekunden Podcast',
+                        'description': 'Wir hatten keine Zeit um ein Thema anzusprechen.',
+                        'date': '2025-04-22T20:00:00Z',
+                      },
+                      {
+                        'id': 2,
+                        'title': '6-Sekunden Podcast: Part 2',
+                        'description': 'Wir hatten wieder keine Zeit um ein Thema anzusprechen.',
+                        'date': '2025-04-23T18:00:00Z',
+                      }
+                    ]
+        """
         con = sqlite3.connect(DATABASE_FILE)
         cur = con.cursor()
         cur.execute(f"SELECT * FROM podcasts")
@@ -43,6 +80,30 @@ class List(Resource):
 
 class GetById(Resource):
     def get(self):
+        """Returns all podcasts metadata in the database
+        ---
+        parameters:
+          - name: id
+            in: query
+            type: integer
+            required: true
+        responses:
+            200:
+                description: A podcast object matching the id specified in the parameter
+                schema:
+                    $ref: "#/definitions/Podcast"
+                examples:
+                  {
+                    'id': 1,
+                    'title': '6-Sekunden Podcast',
+                    'description': 'Wir hatten keine Zeit um ein Thema anzusprechen.',
+                    'date': '2025-04-22T20:00:00Z',
+                  }
+            400:
+                description: No id was provided
+            404:
+                description: Podcast was not found
+        """
         id = request.args.get("id")
 
         if id == None:
@@ -61,6 +122,31 @@ class GetById(Resource):
 
 class Create(Resource):
     def post(self):
+        """Create a podcast and return the new id
+        ---
+        parameters:
+          - name: title
+            in: path
+            type: string
+            required: true
+          - name: description
+            in: path
+            type: string
+            required: true
+          - name: audio
+            in: path
+            type: file
+            required: true
+        responses:
+            200:
+                description: The internal id of the newly created podcast
+                schema:
+                    type: integer
+                examples:
+                    1
+            404:
+                description: Something went wrong in the process of creating the podcast
+        """
         title = request.form.get("title")
         description = request.form.get("description")
         audio_file = request.files.get("audio")
@@ -86,6 +172,19 @@ class Create(Resource):
 
 class GetFileByFilename(Resource):
     def get(self, filename):
+        """Return the audio file associated to a filename 
+        ---
+        parameters:
+          - name: filename
+            in: query
+            type: string
+            required: true
+        responses:
+            200:
+                description: A file corresponding to the passed argument
+            404:
+                description: No file with the given name was found
+        """
         path = os.path.abspath(os.path.join(UPLOAD_PATH, filename))
 
         return send_file(path)
