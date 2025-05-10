@@ -28,11 +28,6 @@ class Podcast:
     date: str
     filepath: str
 
-class Ping(Resource):
-    def get(self):
-        resp = "Pong!"
-        return jsonify({"data": resp})
-
 class List(Resource):
     def get(self):
         con = sqlite3.connect(DATABASE_FILE)
