@@ -86,7 +86,7 @@ export const PodcastLists = () => {
             <p className={styles.podcastDescription}>{ep.description}</p>
             {ep.filepath && (
               <audio controls>
-                <source src={`http://localhost:1111/uploads/${ep.filepath}`} type="audio/mp3" />
+                <source src={`http://localhost:1111/api/get_upload/${ep.filepath}`} type="audio/mp3" />
                 Your browser does not support the audio element.
               </audio>
             )}
