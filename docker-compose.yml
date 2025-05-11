@@ -4,11 +4,14 @@ services:
   backend:
     build: ./backend
     ports:
-      - "5000:5000"
-    volumes:
-      - ./backend/data:/data
+      - "1111:1111"
+    environment:
+      DATABASE_FILE: ./flosscaster
+      UPLOAD_PATH: ./uploads
 
   frontend:
     build: ./frontend
     ports:
       - "3000:3000"
+    environment:
+      REACT_APP_BACKEND_HOST: localhost

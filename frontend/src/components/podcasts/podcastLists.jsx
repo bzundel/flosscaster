@@ -11,6 +11,10 @@ export const PodcastLists = () => {
   const[showUpload, setShowUpload] = useState(false);
   const handleOpen = () => setShowUpload(true);
   const handleClose = () => setShowUpload(false);
+
+  const BACKEND_HOST = process.env.REACT_APP_BACKEND_HOST || "localhost"; // get environment variable for dev and docker compatibility
+
+
   
   const handleSumbit =async (e) => {
     e.preventDefault();
@@ -27,7 +31,7 @@ export const PodcastLists = () => {
     formData.append("audio", selectedFile);
 
     try{
-      const response = await fetch("http://localhost:1111/api/create",{
+      const response = await fetch(`http://${BACKEND_HOST}:1111/api/create`, {
         method: "POST",
         body: formData,
       });
@@ -49,7 +53,7 @@ export const PodcastLists = () => {
   };
   
   const fetchEpisodes = async () => {
-    const response = await fetch("http://localhost:1111/api/list");
+    const response = await fetch(`http://${BACKEND_HOST}:1111/api/list`);
     const data = await response.json();
     setEpisodes(data.reverse()); // Show newest first
   };
@@ -86,7 +90,7 @@ export const PodcastLists = () => {
             <p className={styles.podcastDescription}>{ep.description}</p>
             {ep.filepath && (
               <audio controls>
-                <source src={`http://localhost:1111/api/get_upload/${ep.filepath}`} type="audio/mp3" />
+                <source src={`http://${BACKEND_HOST}:1111/api/get_upload/${ep.filepath}`} type="audio/mp3" />
                 Your browser does not support the audio element.
               </audio>
             )}
