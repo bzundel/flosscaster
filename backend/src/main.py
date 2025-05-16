@@ -12,6 +12,7 @@ from tools import rss_helper
 DATABASE_FILE = os.getenv("DATABASE_FILE")
 UPLOAD_PATH = "uploads"
 ALLOWED_EXTENSIONS = {".mp3"}
+FRONTEND_URL = os.getenv("FRONTEND_URL")
 
 os.makedirs(UPLOAD_PATH, exist_ok=True)
 
@@ -169,13 +170,13 @@ class Create(Resource):
         con.commit()
         con.close()
 
-        rss_helper.add_episode_to_podcast(title, "localhost:3000", description) # TODO get URL via env var and point to episode section (with # notation thingy)
+        rss_helper.add_episode_to_podcast(title, FRONTEND_URL, description) # TODO point to episode section (with # notation thingy)
 
         return f"{new_id}", 200
 
 class GetFileByFilename(Resource):
     def get(self, filename):
-        """Return the audio file associated to a filename 
+        """Return the audio file associated to a filename
         ---
         parameters:
           - name: filename
