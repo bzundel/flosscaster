@@ -7,6 +7,7 @@ from flask_restful import Resource, Api, abort
 from flask_cors import CORS
 from dataclasses import dataclass
 from flasgger import Swagger
+from tools import rss_helper
 
 DATABASE_FILE = os.getenv("DATABASE_FILE")
 UPLOAD_PATH = "uploads"
@@ -167,6 +168,8 @@ class Create(Resource):
         new_id = cur.lastrowid
         con.commit()
         con.close()
+
+        rss_helper.add_episode_to_podcast(title, "localhost:3000", description) # TODO get URL via env var and point to episode section (with # notation thingy)
 
         return f"{new_id}", 200
 
