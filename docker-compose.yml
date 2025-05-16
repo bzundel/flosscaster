@@ -8,6 +8,8 @@ services:
     environment:
       DATABASE_FILE: ./flosscaster
       UPLOAD_PATH: ./uploads
+      RSS_FILE: ./feed.xml
+      FRONTEND_URL: ${FRONTEND_URL:-localhost:3000}
 
   frontend:
     build: ./frontend
