@@ -34,8 +34,9 @@ def add_episode_to_podcast(title: str, url: str, description: str):
     channel = root.find('channel')
     channel.append(new_item)
 
-    # Speichern des aktualisierten Feeds
+    # Speichern des aktualisierten Feeds mit Zeilenumbrüchen und Einrückungen
     with open(file_path, 'wb') as f:
         f.write(etree.tostring(root, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
 
     print(f'Die neue Episode "{title}" wurde erfolgreich zu {filename} hinzugefügt.')
+
