@@ -5,3 +5,4 @@ data/
 .env
 .envrc
 .DS_Store
+*.xml
