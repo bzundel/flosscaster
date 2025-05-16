@@ -5,12 +5,20 @@ from lxml import etree
 
 RSS_FILE = os.getenv("RSS_FILE") # fetch target rss file from env var. must be given as relative path (./test.rss instead of test.rss)
 
+RSS_TEMPLATE = """<?xml version='1.0' encoding='UTF-8'?>
+<rss version="2.0">
+  <channel>
+  </channel>
+</rss>
+"""
+
 def add_episode_to_podcast(title: str, url: str, description: str):
     if not os.path.exists(os.path.dirname(RSS_FILE)):
         os.makedirs(os.path.dirname(RSS_FILE), exist_ok = True) # create file path if it doesn't exist
 
     if not os.path.isfile(RSS_FILE):
-        pass # TODO create basic rss feed from template
+        with open(RSS_FILE, "w") as f:
+            f.write(RSS_TEMPLATE) # create rss boilerplate of no feed exists
 
     with open(RSS_FILE, 'rb') as f:
         feed_content = f.read()
