@@ -7,7 +7,7 @@ from flask_restful import Resource, Api, abort
 from flask_cors import CORS
 from dataclasses import dataclass
 from flasgger import Swagger
-from tools import rss_helper
+from tools import rss_helper, masttoot
 
 DATABASE_FILE = os.getenv("DATABASE_FILE")
 UPLOAD_PATH = "uploads"
@@ -171,6 +171,7 @@ class Create(Resource):
         con.close()
 
         rss_helper.add_episode_to_podcast(title, FRONTEND_URL, description) # TODO point to episode section (with # notation thingy)
+        masttoot.masttoot(title, FRONTEND_URL, description)
 
         return f"{new_id}", 200
 
