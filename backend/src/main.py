@@ -13,6 +13,7 @@ DATABASE_FILE = os.getenv("DATABASE_FILE")
 UPLOAD_PATH = "uploads"
 ALLOWED_EXTENSIONS = {".mp3"}
 FRONTEND_URL = os.getenv("FRONTEND_URL")
+RSS_FILE = os.getenv("RSS_FILE")
 
 os.makedirs(UPLOAD_PATH, exist_ok=True)
 
@@ -194,10 +195,27 @@ class GetFileByFilename(Resource):
 
         return send_file(path)
 
+class GetRSS(Resource):
+    def get(self):
+        """Return the RSS feed
+        ---
+        responses:
+            200:
+                description: File was found and successfully sent
+            304:
+                description: File was found and is unmodified, cached version is used
+            404:
+                description: RSS file was not found in the filesystem
+        """
+        feed_path = os.path.abspath(RSS_FILE)
+        print(feed_path)
+        return send_file(feed_path)
+
 api.add_resource(List, "/api/list")
 api.add_resource(GetById, "/api/get")
 api.add_resource(Create, "/api/create")
 api.add_resource(GetFileByFilename, "/api/get_upload/<path:filename>")
+api.add_resource(GetRSS, "/rss")
 
 if __name__ == "__main__":
     con = sqlite3.connect(DATABASE_FILE)
