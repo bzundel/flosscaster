@@ -28,7 +28,7 @@ def add_episode_to_podcast(title: str, url: str, description: str):
     etree.SubElement(new_item, 'pubDate').text = new_episode_pubDate
     enclosure = etree.SubElement(new_item, 'enclosure')
     enclosure.set('url', url)
-    enclosure.set('type', 'audio/flac')
+    enclosure.set('type', 'audio/mpeg')
 
     # Füge das neue Item zum Channel hinzu
     channel = root.find('channel')
