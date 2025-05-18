@@ -30,11 +30,11 @@
   Patryk \\
   \texttt{Patryk@stud.fra-uas.de}
   \and
-  salat17 \\
-  \texttt{salat17@stud.fra-uas.de}
-  \and
   Sascha Gab \\
   \texttt{Sascha@stud.fra-uas.de}
+  \and
+  Zimmermann, Alwin \\
+  \texttt{salat17@stud.fra-uas.de}
   \and
   Zundel, Benedikt \\
   \texttt{benedikt.zundel@stud.fra-uas.de}
@@ -54,7 +54,7 @@
 \newpage
 
 \section{Technische Dokumentation}
-\subsection{Backend}
+\subsection{Backend \small{(Benedikt Zundel)}}
 Als Kommunikationsschnittstelle mit dem Frontend haben wir uns für ein minimales restful \textit{application programming interface} (API) entschieden. Dafür haben wir unterliegend \texttt{flask}, insbesondere \texttt{flask-restful}, verwendet. Diese API legt die wesentlichen Endpunkte, die verwendet werden, um Podcast Episoden abzufragen und neue zu erstellen, frei. Zum sichern der Episoden verwenden wir eine dynamische Lösung, mit der Metadaten in einer leichtgewichtigen \texttt{SQLite} Datenbank abgelegt werden und die zugehörigen Audiodaten im Dateisystem gespeichert werden, mit einem Verweis auf den Pfad in der Datenbank. Rückwirkend wird entsprechend der Eintrag aus der Datenbank geholt und die Datei aus dem Dateisystem geladen.
 
 \subsubsection{Modell}
@@ -128,11 +128,139 @@ class List(Resource):
 ...
 \end{lstlisting}
 
-\subsection{Dockerization}
+\subsection{Dockerization \small{(Benedikt Zundel)}}
 Um das Einrichten der Application auf einem Server zu vereinfachen, haben wir uns für die \textit{dockerisierung} (i.e. Befähigung mit Docker zu bauen) entschieden. Das Projekt lässt sich in zwei primäre Kategorien teilen: Das Frontend und das Backend. Beide Teile benötigen einen \texttt{Dockerfile}, der die jeweiligen Teile als isolierte \textit{Container} darstellt. Inhalt eines \texttt{Dockerfiles} ist eine Beschreibung des Bauvorgangs, der das Installieren von Abhängigkeiten, Kopieren von laufzeitrelevanten Dateien und Ausführen der Applikation beinhaltet. Um zu verhindern, dass mühselig zwei Container parallel gestartet werden müssen, haben wir \texttt{docker-compose} zur \textit{Container orchestrierung} eingesetzt. Mit \texttt{docker-compose} lassen sich multi-Container Anwendungen mit einem Kommando ausführen, indem ihr Verhalten in einer \texttt{YAML}-Datei definiert wird. Darin wird, im Falle dieses Projekts, beschrieben, welche Container gestartet, welche Ports offengelegt und welche Umgebungsvariablen verfügbar gemacht werden sollen. Anhand dieser Informationen werden die Container gebaut und isoliert gestartet. Eine direkte Kommunikation mit den Containern ist nur durch die freigegebenen Ports möglich, was zu einer erhöhten Sicherheit der Anwendung führt.
 
-\subsection{Deployment}
+\subsection{Deployment \small{(Benedikt Zundel)}}
 Didn't deploy yet, not much to say.
+
+\subsection[RSS-Feed Generator \small{(Alwin Zimmermann)}]{RSS-Feed Generator \small{(Alwin Zimmermann)\footnote{Ich erkläre hiermit, dass ich bei der Erstellung dieses Projektes Unterstützung von ChatGPT, einem KI-gestützten Sprachmodell von OpenAI, in Anspruch genommen habe. Alle Inhalte wurden von mir überprüft und bearbeitet.}}}
+
+\subsubsection{Ziel}
+Das Ziel des Generators ist es, dass ein sogenannter Podcatcher den RSS Feed unseres Podcasts einlesen kann. Der RSS Feed muss hierfür von unserem Server als .XML (oder .rss) bereitgestellt werden. Bei einem RSS Feed gibt es einige wichtige Punkte zu beachten, die für den Aufbau eines syntaktisch richtigen Feeds beachtet werden müssen. Eine XML-Datei hat eine Baumstruktur, im Kopf stehen Infos wie: XML-Version, Encoding, RSS-Version.
+
+\subsubsection{Struktur des RSS Feeds}
+Nach dem Kopf steht die Channel-Sektion, in der der Channel die wichtigsten Werte erhält. Diese wären:
+\begin{itemize}
+    \item Titel
+    \item Link zur Webseite
+    \item Beschreibung
+    \item Sprache
+    \item Veröffentlichungsdatum
+    \item Info, wann der Feed das letzte Mal erstellt/aktualisiert wurde
+\end{itemize}
+
+Ab diesem Bereich beginnen die Items, in denen die Infos über die neuen Podcast-Folgen hinzugefügt werden können. Jedes Item (jede Folge) hat:
+
+\begin{itemize}
+    \item Titel
+    \item Link zur Episode
+    \item Beschreibung
+    \item Enclosure URL
+    \item Veröffentlichungsdatum
+\end{itemize}
+
+Nach allen Items wird der Channel geschlossen und der RSS Feed beendet.
+
+\subsubsection{Probleme}
+Das Paket \texttt{feedparser} \cite{feedparser} hat leider das Problem, dass es die sogenannte Enclosure URL nicht parsen kann. Diese ist jedoch essenziell für den Podcatcher, um die Datei finden zu können (Issue: \#285 enclosure not parsed). Das Problem besteht nicht beim ersten Erstellen des Feeds, sondern erst beim Wiedereinlesen des Feeds. Eine mögliche Lösung hätte sein können, die Infos alle redundant zu speichern, jedoch habe ich diese Lösung schnell verworfen, da sie mit einem unverhältnismäßigen Aufwand verbunden wäre. Eine weitere Lösung könnte das Modul RSS in Ruby sein, jedoch wollte ich die Problematik in Python lösen, da die meisten Teile unseres Projekts bereits in Python geschrieben waren und ich selber bisher noch kein Ruby geschrieben habe.
+Deshalb habe ich mich für das Paket \texttt{lxml} \cite{lxml} entschieden, welches ein generisches XML-Bearbeitungstool ist. Dieses ist zwar nicht speziell für RSS entworfen, sollte jedoch manuell in der Lage sein, den Feed entsprechend anzupassen.
+
+\begin{lstlisting}[language=Python, caption=Feedparser Bug]
+def load_existing_feed(self):
+  """Laedt den bestehenden RSS-Feed, falls vorhanden."""
+  if os.path.exists(self.feed_file_path):
+      feed = feedparser.parse(self.feed_file_path)
+      for entry in feed.entries:
+          item = {
+              'title': entry.title,
+              'description': entry.description,
+              'date': entry.published if 'published' in entry else datetime.now().isoformat(),
+              'enclosure_url': entry.enclosure.href if 'enclosure' in entry else None,
+              'enclosure_type': entry.enclosure.type if 'enclosure' in entry else None,
+              'enclosure_length': entry.enclosure.length if 'enclosure' in entry else None
+          }
+          self.items.append(item)
+          print(self)
+\end{lstlisting}
+
+\subsubsection{Das Script}
+Das Script ist ein einfaches Python-Modul, das eine Funktion zum Hinzufügen von Podcasts in den Channel ermöglicht. Wichtig ist natürlich das Importieren der benötigten Python-Libraries.
+
+\begin{lstlisting}[language=Python, caption=RSS-Feed Generator imports]
+import os
+import argparse
+import datetime
+from lxml import etree
+\end{lstlisting}
+
+Als Input-Werte benötigt es lediglich:
+
+\begin{itemize}
+    \item einen Titel als String
+    \item eine URL zu der Folge, die hinzugefügt werden möchte
+    \item eine Beschreibung der Folge
+\end{itemize}
+
+Das Veröffentlichungsdatum wird als aktuelles Datum gewählt, da das Script automatisiert ausgeführt werden soll. Zudem wird der Audio-Typ auf MP3 festgelegt, da wir das FLAC-Format von Anfang an verworfen haben. Mithilfe von \texttt{lxml} wird nun ein neues \texttt{<item>} Objekt hinzugefügt mit den angegebenen Werten.
+
+\begin{lstlisting}[language=Python, caption=Erstellen eines neuen Feed-Items]
+# Erstelle ein neues Item
+new_item = etree.Element('item')
+etree.SubElement(new_item, 'title').text = title
+etree.SubElement(new_item, 'description').text = description
+etree.SubElement(new_item, 'pubDate').text = new_episode_pubDate
+enclosure = etree.SubElement(new_item, 'enclosure')
+enclosure.set('url', url)
+enclosure.set('type', 'audio/mpeg')
+\end{lstlisting}
+
+Auch wird im Kopf das \texttt{lastBuildDate} auf den aktuellen Moment abgeändert. Zuletzt wird der neue XML-Feed dann in einen Ordner mit dem Namen \texttt{rss} abgespeichert und kann vom Server publiziert werden.
+
+\begin{lstlisting}[language=Python, caption=Vollständige Funktion des RSS-Feed Generators]
+def add_episode_to_podcast(title: str, url: str, description: str):
+    # Verzeichnis und Dateiname
+    directory = './rss'  # Aktuelles Verzeichnis mit dem Unterordner 'rss'
+    filename = 'podcast.xml'  # Name der RSS-Datei
+
+    # Vollstaendiger Pfad zur Datei
+    file_path = os.path.join(directory, filename)
+
+    # RSS-Feed laden
+    with open(file_path, 'rb') as f:
+        feed_content = f.read()
+
+    # XML-Parser initialisieren
+    root = etree.fromstring(feed_content)
+
+    # Neue Episode hinzufuegen
+    new_episode_pubDate = str(datetime.datetime.now())
+
+    # Erstelle ein neues Item
+    new_item = etree.Element('item')
+    etree.SubElement(new_item, 'title').text = title
+    etree.SubElement(new_item, 'description').text = description
+    etree.SubElement(new_item, 'pubDate').text = new_episode_pubDate
+    enclosure = etree.SubElement(new_item, 'enclosure')
+    enclosure.set('url', url)
+    enclosure.set('type', 'audio/mpeg')
+
+    # Fuege das neue Item zum Channel hinzu
+    channel = root.find('channel')
+    channel.append(new_item)
+
+    # Aktualisiere lastBuildDate
+    last_build_date = channel.find('lastBuildDate')
+    last_build_date.text = str(datetime.datetime.now())
+
+    # Speichern des aktualisierten Feeds mit Zeilenumbruechen und Einrueckungen
+    with open(file_path, 'wb') as f:
+        f.write(etree.tostring(root, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
+
+    print(f'Die neue Episode "{title}" wurde erfolgreich zu {filename} hinzugefuegt.')
+\end{lstlisting}
+
+\newpage
 
 \bibliographystyle{plain}
 \bibliography{refs}
