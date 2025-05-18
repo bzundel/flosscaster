@@ -11,7 +11,6 @@ from tools import rss_helper, masttoot
 
 DATABASE_FILE = os.getenv("DATABASE_FILE")
 UPLOAD_PATH = "uploads"
-ALLOWED_EXTENSIONS = {".mp3"}
 FRONTEND_URL = os.getenv("FRONTEND_URL")
 RSS_FILE = os.getenv("RSS_FILE")
 
@@ -154,10 +153,10 @@ class Create(Resource):
         description = request.form.get("description")
         audio_file = request.files.get("audio")
 
-        _, extension = os.path.splitext(audio_file.filename)
+        if audio_file.mimetype != "audio/mpeg":
+            abort(400, error_message="Invalid file format; must be audio/mpeg")
 
-        if not extension.lower() in ALLOWED_EXTENSIONS:
-            abort(400, error_message="Invalid file extension")
+        _, extension = os.path.splitext(audio_file.filename)
 
         filename = f"{str(uuid.uuid4())}{extension}"
         file_path = os.path.join(UPLOAD_PATH, filename)
