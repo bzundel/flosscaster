@@ -1,0 +1,140 @@
+\documentclass{article}
+
+\input{preamble.tex}
+
+\usepackage{listings}
+\usepackage{hyperref}
+
+\title{Podcast Management System "FLOSScaster" \\
+	\begin{large}
+	WP-Seminar "Quelloffene Software in der modernen Informatik" Projekt
+	\end{large} \\
+  \begin{normalsize}
+    Frankfurt University of Applied Sciences
+  \end{normalsize}
+}
+
+\author{
+  dkar001 \\
+  \texttt{dkar001@stud.fra-uas.de}
+  \and
+  Dominik \\
+  \texttt{Dominik@stud.fra-uas.de}
+  \and
+  dwippah \\
+  \texttt{dwippah@stud.fra-uas.de}
+  \and
+  Michael F \\
+  \texttt{MichaelF@stud.fra-uas.de}
+  \and
+  Patryk \\
+  \texttt{Patryk@stud.fra-uas.de}
+  \and
+  salat17 \\
+  \texttt{salat17@stud.fra-uas.de}
+  \and
+  Sascha Gab \\
+  \texttt{Sascha@stud.fra-uas.de}
+  \and
+  Zundel, Benedikt \\
+  \texttt{benedikt.zundel@stud.fra-uas.de}
+}
+
+\date{Friday, 2025-05-23}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\tableofcontents
+\lstlistoflistings
+
+\newpage
+
+\section{Technische Dokumentation}
+\subsection{Backend}
+Als Kommunikationsschnittstelle mit dem Frontend haben wir uns für ein minimales restful \textit{application programming interface} (API) entschieden. Dafür haben wir unterliegend \texttt{flask}, insbesondere \texttt{flask-restful}, verwendet. Diese API legt die wesentlichen Endpunkte, die verwendet werden, um Podcast Episoden abzufragen und neue zu erstellen, frei. Zum sichern der Episoden verwenden wir eine dynamische Lösung, mit der Metadaten in einer leichtgewichtigen \texttt{SQLite} Datenbank abgelegt werden und die zugehörigen Audiodaten im Dateisystem gespeichert werden, mit einem Verweis auf den Pfad in der Datenbank. Rückwirkend wird entsprechend der Eintrag aus der Datenbank geholt und die Datei aus dem Dateisystem geladen.
+
+\subsubsection{Modell}
+Das unterliegende Modell, welches wir zur internen Darstellung der Podcast Episoden verwenden, besteht aus einer \texttt{dataclass} mit wenigen Feldern (vgl. Listing \ref{lst:episode_model}). Sie enthält eine \texttt{id}, welche eine eindeutige Identifikation des Elements darstellt, die Felder \texttt{title}, \texttt{description} und \texttt{date} in denen Metadaten der Episoden liegen und das Feld \texttt{filepath}, in dem der interne Pfad zur Audiodatei gesichert wird. Eine \texttt{dataclass} war für unsere Zwecke ausreichend, da es keine Anforderungen für komplexe Operationen gibt und somit keine Funktionen innerhalb der Klasse nötig sind, weshalb das Modell als reine Datenklasse implementiert werden kann.
+
+\begin{lstlisting}[label=lst:episode_model, language=Python, caption=Implementation der Podcast-Episoden Klasse]
+@dataclass
+class Podcast:
+    id: int
+    title: str
+    description: str
+    date: str
+    filepath: str
+\end{lstlisting}
+
+\subsubsection{Endpunkt: \texttt{/api/list}}
+Der Endpunkt \texttt{/api/list} dient der Lieferung der vollständigen Auflistung aller Episoden und ist somit als \texttt{GET} Endpunkt definiert. Es wird kein Parameter im Aufruf erwartet. Intern wird bei einem Aufruf eine \texttt{SELECT *} SQL-Abfrage an die Datenbank gemacht. Das Ergebnis wird dann auf die Modellstruktur \textit{gecastet} und als \texttt{JSONArray} als Antwort zurückgeschickt.
+
+\subsubsection{Endpunkt: \texttt{/api/create}}
+Bei dem Endpunkt \texttt{/api/create} handelt es sich um einen \texttt{POST} Endpunkt, der für das Erstellen neuer Episoden verantwortlich ist. Bei einem Aufruf werden die Parameter \texttt{title} \& \texttt{description} erwartet, welche die Metadaten der zu erstellenden Episode repräsentieren, und die Audiodatei \texttt{audio}, welche dem \texttt{MP3}-Format entsprechen soll und im Dateisystem abgelegt wird. Die Datei wird auf die formalen Kriterien geprüft und bei Erfolg mit einer \texttt{UUID} versehen im Dateisystem gesichert um Kollisionen zu vermeiden. Anhand der übergebenen Metadaten und dem generierten Dateinamen wird ein Eintrag in die Datenbank angelegt. Sollten alle Operationen erfolgen, wird der neue Eintrag dem RSS-Feed angehangen und ein \textit{Toot} von dem verbundenen Mastodon Account gesendet. Die Antwort an die aufrufende Instanz besteht aus dem Erfolgscode \texttt{200} mit der internen \texttt{id} des erstellten Eintrags.
+
+\subsubsection{Endpunkt: \texttt{/api/get\_upload/<path>}}
+Dieser Endpunkt ist ein weiter \texttt{GET} Endpunkt, der dem Senden der Audiodatei aus dem Dateisystem dient. Als URL-Parameter wird der Dateiname der gewünschten Episode erwartet, der von dem Client aus dem \texttt{JSON}-Objekt gelesen wird. Mit Hilfe des Dateinamens und dem Wissen über das Verzeichnis, in dem die Audiodateien gespeichert sind, ließt die API die Datei aus dem Dateisystem und sendet diese als Antwort. Sollte die Datei nicht gefunden werden, Antwortet die API mit dem Fehlercode \texttt{404}.
+
+\subsubsection{Endpunkt: \texttt{/rss}}
+Zur Bereitstellung des RSS-Feeds wird der Endpunkt \texttt{/rss} verwendet, der, auf Basis der Umgebungsvariable, die den Pfad zur RSS-Feed Datei bestimmt, die Datei aus dem Dateisystem lädt und als Antwort sendet.
+
+\subsubsection{Dokumentation}
+Die Dokumentation der API (verfügbar unter dem \texttt{/apidocs} Endpunkt) ist im Code enthalten und wird durch \texttt{swagger} \cite{swagger} zur Laufzeit bereitgestellt. Listing \ref{lst:listdoc} ist ein Beispiel, welches die Dokumentation des \texttt{/api/list} Endpunkts bestimmt. Erkennbar ist, dass die Dokumentation in einem \texttt{YAML}-ähnlichen Format geschrieben wird. Dort lassen sich Schemata definieren (in diesem Fall die Struktur eines Podcast-Episoden Objekts), Rückgabecodes der API und Parameter, die für eine Abfrage relevant sind.
+
+\begin{lstlisting}[label=lst:listdoc, caption=Dokumentationskommentar des \texttt{/api/list} Endpunkts]
+class List(Resource):
+    def get(self):
+        """Returns all podcasts metadata in the database
+        ---
+        definitions:
+            Podcast:
+                type: object
+                properties:
+                    id:
+                        type: integer
+                    title:
+                        type: string
+                    description:
+                        type: string
+                    date:
+                        type: string
+        responses:
+            200:
+                description: A list containing all podcasts
+                schema:
+                    type: array
+                    items:
+                        $ref: "#/definitions/Podcast"
+                examples:
+                    [
+                      {
+                        'id': 1,
+                        'title': '6-Sekunden Podcast',
+                        'description': 'Wir hatten keine Zeit um ein Thema anzusprechen.',
+                        'date': '2025-04-22T20:00:00Z',
+                      },
+                      {
+                        'id': 2,
+                        'title': '6-Sekunden Podcast: Part 2',
+                        'description': 'Wir hatten wieder keine Zeit um ein Thema anzusprechen.',
+                        'date': '2025-04-23T18:00:00Z',
+                      }
+                    ]
+        """
+...
+\end{lstlisting}
+
+\subsection{Dockerization}
+Um das Einrichten der Application auf einem Server zu vereinfachen, haben wir uns für die \textit{dockerisierung} (i.e. Befähigung mit Docker zu bauen) entschieden. Das Projekt lässt sich in zwei primäre Kategorien teilen: Das Frontend und das Backend. Beide Teile benötigen einen \texttt{Dockerfile}, der die jeweiligen Teile als isolierte \textit{Container} darstellt. Inhalt eines \texttt{Dockerfiles} ist eine Beschreibung des Bauvorgangs, der das Installieren von Abhängigkeiten, Kopieren von laufzeitrelevanten Dateien und Ausführen der Applikation beinhaltet. Um zu verhindern, dass mühselig zwei Container parallel gestartet werden müssen, haben wir \texttt{docker-compose} zur \textit{Container orchestrierung} eingesetzt. Mit \texttt{docker-compose} lassen sich multi-Container Anwendungen mit einem Kommando ausführen, indem ihr Verhalten in einer \texttt{YAML}-Datei definiert wird. Darin wird, im Falle dieses Projekts, beschrieben, welche Container gestartet, welche Ports offengelegt und welche Umgebungsvariablen verfügbar gemacht werden sollen. Anhand dieser Informationen werden die Container gebaut und isoliert gestartet. Eine direkte Kommunikation mit den Containern ist nur durch die freigegebenen Ports möglich, was zu einer erhöhten Sicherheit der Anwendung führt.
+
+\subsection{Deployment}
+Didn't deploy yet, not much to say.
+
+\bibliographystyle{plain}
+\bibliography{refs}
+
+\end{document}
