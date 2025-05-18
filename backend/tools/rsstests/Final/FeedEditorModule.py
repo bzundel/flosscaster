@@ -33,6 +33,10 @@ def add_episode_to_podcast(title: str, url: str, description: str):
     # Füge das neue Item zum Channel hinzu
     channel = root.find('channel')
     channel.append(new_item)
+    
+    # Aktualisiere lastBuildDate
+    last_build_date = channel.find('lastBuildDate')
+    last_build_date.text = str(datetime.datetime.now())
 
     # Speichern des aktualisierten Feeds mit Zeilenumbrüchen und Einrückungen
     with open(file_path, 'wb') as f:

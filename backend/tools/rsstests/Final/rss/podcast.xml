@@ -6,7 +6,7 @@
     <description>Dies ist ein Beispiel-Podcast.</description>
     <language>de</language>
     <pubDate>Mon, 01 Jan 2023 00:00:00 +0000</pubDate>
-    <lastBuildDate>Mon, 01 Jan 2023 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>2025-05-18 10:36:56.310687</lastBuildDate>
     <item>
       <title>Die ersten 6 sekunden</title>
       <link>https://example.com/podcast/episode1.mp3</link>
@@ -14,5 +14,5 @@
       <enclosure url="https://example.com/podcast/episode1.mp3" type="audio/mpeg"/>
       <pubDate>Mon, 01 Jan 2023 00:00:00 +0000</pubDate>
     </item>
-  <item><title>Neuste Folge </title><description>Ich mag 6 sekunden</description><pubDate>17.12.2024</pubDate><enclosure url="https://hierIhreWerbungUndSo.de" type="audio/flac"/></item><item><title>Neuste Folge </title><description>Ich mag 6 sekunden</description><pubDate>2025-04-26 13:29:49.945110</pubDate><enclosure url="https://hierIhreWerbungUndSo.de" type="audio/flac"/></item><item><title>Meine erste Episode</title><description>Dies ist meine erste Episode</description><pubDate>2025-05-16 09:28:08.519374</pubDate><enclosure url="http://example.com/episode.flac" type="audio/flac"/></item><item><title>Meine erste Episode</title><description>Dies ist meine erste Zweite</description><pubDate>2025-05-16 09:29:25.577068</pubDate><enclosure url="http://example.com/episode.flac" type="audio/flac"/></item><item><title>Meine erste Siebte</title><description>Dies ist meine siebte Episode</description><pubDate>2025-05-16 09:32:04.030896</pubDate><enclosure url="http://example.com/episode.flac" type="audio/flac"/></item></channel>
+  <item><title>Neuste Folge </title><description>Ich mag 6 sekunden</description><pubDate>17.12.2024</pubDate><enclosure url="https://hierIhreWerbungUndSo.de" type="audio/flac"/></item><item><title>Neuste Folge </title><description>Ich mag 6 sekunden</description><pubDate>2025-04-26 13:29:49.945110</pubDate><enclosure url="https://hierIhreWerbungUndSo.de" type="audio/flac"/></item><item><title>Meine erste Episode</title><description>Dies ist meine erste Episode</description><pubDate>2025-05-16 09:28:08.519374</pubDate><enclosure url="http://example.com/episode.flac" type="audio/flac"/></item><item><title>Meine erste Episode</title><description>Dies ist meine erste Zweite</description><pubDate>2025-05-16 09:29:25.577068</pubDate><enclosure url="http://example.com/episode.flac" type="audio/flac"/></item><item><title>Meine erste Siebte</title><description>Dies ist meine siebte Episode</description><pubDate>2025-05-16 09:32:04.030896</pubDate><enclosure url="http://example.com/episode.flac" type="audio/flac"/></item><item><title>Ein test zur last build date</title><description>Eine neue tolle episode</description><pubDate>2025-05-18 10:36:56.310322</pubDate><enclosure url="https://example.com/podcast/episode.mp3" type="audio/flac"/></item></channel>
 </rss>
