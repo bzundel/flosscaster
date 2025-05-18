@@ -1,0 +1,7 @@
+/* Rule-set for the main container of the “Bar” component
+it provides a padded box for a space between the list and the hero field */
+.container{
+    background-color: rgba(255, 200, 250, 0.1);
+    border-radius: 0.5rem;
+    padding: 3rem;
+}
