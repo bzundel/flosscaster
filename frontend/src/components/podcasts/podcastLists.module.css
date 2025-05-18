@@ -1,147 +1,150 @@
+
+/* Rule-set for the overall container of the episode list:
+ it lays out all podcast cards in a vertical column with spacing */
 .container{
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    padding: 2rem 5%;
-    color:#fff;
+    display: flex;                          /* enable flexbox layout */
+    flex-direction: column;                 /* stack episode-cards vertically */
+    gap: 1rem;                              /* 16px gap between each card */
+    padding: 2rem 5%;                       /* 32px top/bottom, 5% left/right padding */
+    color:#fff;                           /* default white text */
 }
 
+/* Rule-set for the main heading of the podcast section:
+it styles the top-level title of the list */
 .mainHeader{
-    color: #fff;
-    font-weight: 800;
-    font-size: 2.2rem;
-    font-family: 'Inter', sans-serif;
-    line-height: 0.1px;
+    color: #fff;                          /* white text */
+    font-weight: 800;                       /* extra-bold weight */
+    font-size: 2.2rem;                      /* large heading size */
+    font-family: 'Inter', sans-serif;       /* consistent typeface */
+    line-height: 0.1px;                     /*line height of 0.1px*/
+    margin-bottom: 1rem;                    /* space below heading */
 }
 
+/* Rule-set for each podcast card wrapper:
+it gives each episode its “glass” card look and hover effect */
 .podcastCard{
-  display: flex;
-  align-items: center;
-  background-color: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(30px);
-  border-radius: 2rem;
-  padding: 1.5rem;
-  transition: transform 0.2s ease;
+  background-color: rgba(255, 255, 255, 0.1);      /* translucent white */
+  backdrop-filter: blur(30px);                       /* blur behind card */
+  border-radius: 2rem;                               /* 32px rounding of corners */
+  padding: 0.5rem;                                   /* 8px inner padding */
+  transition: transform 0.2s ease;                   /* animate scale on hover */
 }
-
 .podcastCard:hover {
-    transform: scale(1.01);
+    transform: scale(1.01);                          /* slight zoom on the selected card */
 }
 
+/* Rule-set for the title inside each podcast card:
+it controls size, weight and spacing of episode titles */
   .podcastTitle{
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-    font-weight: 700;
+    font-size: 1.5rem;                               /* 24px font size */
+    margin-bottom: 0.5rem;                           /* 8px space below title */
+    font-weight: 700;                                /* bold text */
   }
 
+/* Rule-set for the description text inside each card:
+it styles the body text of the episode description */
   .podcastDescription{
-    font-size: 1rem;
-    font-weight: 500;
-    margin-bottom: 1.5rem;
-    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;                                 /* 16px font size */
+    font-weight: 500;                                /* medium weight for readability */
+    margin-bottom: 1.5rem;                           /* 24px gap before audio player */
+    color: rgba(255, 255, 255, 0.7);               /* faded white for less emphasis */
   }
 
-  .playButton{
-    display: inline-block;
-    padding: 0.5rem 1.2rem;
-    border-radius: 30px;
-    font-weight: 600;
-    color: white;
-    text-decoration: none;
-    transition: 0.3s ease;
-    background-color: #88103a;
+  audio {
+    border-radius: 15px;                             /* rounding of audio player bar */
   }
 
-  .playButton:hover{
-    font-size: 1.05rem;
-    transition: 0.3s ease;
-  }
-
-  /* Upload podcast episodes section*/
+  /* Rule-set for the “Upload Episode” button: 
+  it styles the button that triggers the upload modal */
   .showUploadBtn{
-    width: 13rem;
-    margin-left: auto; 
-    height: 3em;
-    background-color: #a41045;
+    width: 13rem;                             /* fixed width of 208px */
+    margin-left: auto;                        /* roughly 48px height */
+    height: 3em;                              /* pushes button to the right edge */
+    background-color: #a41045;              /* primary accent color */
     outline: none;
-    border-radius: 100px;
-    cursor: pointer;
-    transition: 0.5s;
+    border-radius: 100px;                     /* fully rounded “pill” shape */
+    cursor: pointer;                          /* show the hand cursor */
+    transition: 0.5s;                         /* smooth hover transitions */
     font-size: 19px;
     font-weight: bold;
-    color:#fff;
-    border: none;
+    color:#fff;                             /* white text */
+    border: none;                             /* white text */
   }
 
   .showUploadBtn:hover{
-    box-shadow: 0 0px 18px #d6278d;
+    box-shadow: 0 0px 18px #d6278d;         /* pink glow on hover */
     font-weight: 600;
     transition: 0.5s;
   }
 
   .showUploadBtn:active{
-    transform: scale(0.9);
+    transform: scale(0.9);                    /* slight shrink on click */
   }
 
-  .topContainer{
-    position: fixed;
-    z-index: 1000;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-@keyframes all{
-  100%{
-    transform: translate(-50%, -50%) scale(.9);
-  }
-}
   .top{
-    background-color: rgba(255, 200, 250, 0.1);
-    border-radius: 10px;
-    width: 400px;
-    padding: 20px;
-    position: relative;
+  position: fixed;                            /* fixed to viewport */
+  top: 50%;left: 50%;                         /* center reference point */
+  transform: translate(-50%, -50%);           /* shift to actual center */
+  z-index: 1000;
+  width: 60vw;                                /* 60% of the viewport width */
+  max-width: 90vw;                            /* cap width on large screens */
+  max-height: 90vh;                           /* allow up to 90% of viewport height */
+  padding: 2rem;                              /*inner spacing of 32px*/
+  border-radius: 15px;                        /*rounding of the modal window*/
+  background-color: rgba(20, 20, 20, 0.95); /* dark background*/
   }
 
+  /* Rule-set for the modal’s heading:
+   it styles the “File Upload” title inside the modal window */
   .top h3{
-    font-size: 2.2rem;
-    font-weight: 800;
-    padding: 3% 0;
-    text-align: center;
-    font-family: 'Inter', sans-serif;
-    line-height: 0.1px;
+  font-size: 2.2rem;                          /* large heading size */
+  font-weight: 800;                           /* extra bold */
+  text-align: center;                         /* center the text */
+  margin-bottom: 1rem;                        /*16px space below*/
+  color: #fff;                              /* white text */
   }
-  
-  form input{
-    padding: 10px;
-    margin: 7px 0px;
-    border: 1px solid #fff;
-    outline:none;
-    border-radius: 5px;
-  }
+
+/* Rule-set for text, file inputs, and textarea inside the modal window: 
+it ensure inputs are sized correctly and visible against dark background*/
+.top form input[type="text"],
+.top form textarea,
+.top form input[type="file"] {
+  box-sizing: border-box; 
+  width: 100%;
+  padding: 0.75rem 1rem;            /* 12px vertical, 16px horizontal padding */
+  margin: 0.5rem 0;                 /* 12px vertical spacing between fields */
+  font-size: 1rem;                  /* 16px text size */
+  border: 1px solid #555;         /* dark gray border for contrast */
+  border-radius: 5px;               /*rounding the areas*/
+  background-color: #333;         /* dark input background */
+  color: #eee;                    /* white text for readability */
+  outline: none;                    /* delete default */
+  resize: none;                     /* prevent textarea resize */
+}
+/*Rule-set for the submit button inside the modal:
+  it style the form’s Submit button consistently with theme */
   .submit{
-    display: flex;
-    outline: none;
-    border: none;
-    color: #fff;
-    font-size: 19px;
-    font-weight: bold;
-    background-color: #a41045;
-    cursor: pointer;
-    padding: 10px 25px;
-    margin-top: 10px;
-    border-radius: 5px;
-    font-size: 16px;
+    border: none;                               /* remove default borders*/
+    color: #fff;                              /* white text */
+    font-size: 19px;                            /* 19px font size */
+    font-weight: bold;                          /* bold font*/
+    background-color: #a41045;                /* accent color */
+    cursor: pointer;                            /* show the hand cursor */
+    padding: 10px 25px;                         /* click area */
+    margin-top: 10px;                           /* gap above button */
+    border-radius: 5px;                         /* rounding of the button corners */
+    font-size: 16px;                            
   }
 
   .submit:active{
     transform: scale(1.02);
   }
+
+  /*Rule-set for the modal’s close icon (“×”) in the top right corner of the modal window*/
   .close{
     position: absolute;
-    top: 2px;
-    right: 10px;
-    font-size: 40px;
-    cursor: pointer;
+    top: 2px;                             /* 2px from top edge */
+    right: 10px;                          /* 10px from right edge */
+    font-size: 40px;                      /* large target area */
+    cursor: pointer;                      /* show the hand cursor */
   }

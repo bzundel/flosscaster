@@ -1,93 +1,95 @@
+
+/* Rule-set for the hero section container:
+it splits the screen into text and image colums*/
 .container{
     display: flex;
-    align-items: stretch;
-    justify-content: space-between;
-    margin: 0;
-    height: 100vh;
-    margin-left: 5%;
-}
-.content{
-    flex:1;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    z-index: 1;
-    padding-right: 2rem;
-    height:100vh;
-}
-.mainHeader{
-    color: #fff;
-    font-weight: 800;
-    font-size: 3rem;
-    font-family: 'Inter', sans-serif;
-    margin-top: -17rem;
-}
-.mainParagraph{
-    color: rgba(255, 255, 255, 0.7);
-    margin-top: -2rem;
-    font-size: 1.2rem;
-    max-width: 500px;
-}
-.heroButton{
-    text-decoration: none;
-    border-radius: 100px;
-    font-size: 20px;
-    font-weight: 600;
-    padding: 8px 5px;
-    background-color: #a41045;
-    color: #fff;
-    transition-duration: 0.5s;
-}
-.heroButton:hover{
-    cursor: pointer;
-    font-size: 22px;
-    transition-duration: 0.5s;
-    box-shadow: 0 0px 18px #d6278d;
+    align-items: stretch;               /* equal height for both sides */
+    justify-content: space-between;     /* text left, image right */
+    margin: 0;  
+    height: 100vh;                      /* full viewport height */
+    margin-left: 5%;                    /* offset from left viewport edge */
 }
 
-.mainPicture{
-    flex: 1;
-    max-width: 45vw;
-    width: auto;
-    height: 100vh;
-    object-fit: cover;
-    display: block;
-    margin: 0;
-    padding: 0;
-}
-/*
-.topBlur{
-    position: absolute;
-    width: 100vw;
-    height: 35vw;
-    min-width: 350px;
-    min-width: 350px;
-    top: 100px;
-    left: 50vw;
-    border-radius: 764px;
-    background: #163e6f;
-    filter: blur(100px);
-    z-index: -1;
-}*/
-
-.bottomBlur{
-    position: absolute;
-    width: 62vw;
-    height: 35vw;
-    min-width: 350px;
-    min-width: 250px;
-    top: 230px;
-    right: -16vw;
-    border-radius: 60%;
-    filter: blur(100px);
-    z-index: -1;
-    background: conic-gradient(
-        #a41045 100deg,
-        #d6278d 360deg
-    );
+/*Rule-set for the text content area on the left side:
+it vertically centers heading/text/button and left-align the text */
+.content {
+  flex: 1;                          /* take remaining horizontal space */
+  display: flex;
+  flex-direction: column;           /* stack items vertically */
+  align-items: flex-start;          /* left-align all children */
+  justify-content: center;          /* center children vertically */
+  z-index: 1;                       /* above blur overlays */
+  padding-right: 2rem;              /* space between text and image */
+  height: 100vh;                    /* match container height */
 }
 
+/*Rule-set for the main heading */
+.mainHeader {
+  color: #fff;                    /* white text */
+  font-weight: 800;                 /* extra-bold */
+  font-size: 3rem;                  /* 48px font size */
+  font-family: 'Inter', sans-serif;
+  margin-top: -17rem;               /* pull up for overlapping effect */
+}
+/* Rule-set for for the subheading text */
+.mainParagraph {
+  color: rgba(255, 255, 255, 0.7);/* white at 70% opacity */
+  margin-top: -2rem;                /* slight upward shift */
+  font-size: 1.2rem;                /* 19.2px font size */
+  max-width: 500px;                 /* limit line length for readability */
+}
+
+/* Rule-set for the "Hear now" button : it styles the button pill shaped with a hover effect */
+.heroButton {
+  text-decoration: none;           /* remove underline */
+  border-radius: 100px;            /* fully rounded ends */
+  font-size: 20px;               
+  font-weight: bold;
+  padding: 8px 5px;                /* vertical/horizontal padding */
+  background-color: #a41045;     /* magenta background */
+  color: #fff;                   /* white text */
+  transition-duration: 0.5s;       /* smooth hover transitions */
+  border: none;                    /* no border */
+  outline: none;                   /* remove default focus outline */
+}
+
+.heroButton:hover {  
+  cursor: pointer;                     /* hand cursor on hover */
+  font-size: 22px;                     /* grow slightly */
+  box-shadow: 0 0px 18px #d6278d;    /* add glow effect */
+}
+
+/* Rule-set for the image: it covers right half with the full height of the image*/
+.mainPicture {
+  flex: 1;                       /* take remaining horizontal space */
+  position: relative;
+  max-width: 45vw;               /* cap at 45% of viewport width */
+  width: auto;                   
+  height: 100vh;                 /* full viewport height */
+  object-fit: cover;             /* fill container without stretching */
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+/* Rule-set for the decorative blur element behind the image */
+.bottomBlur {
+  position: absolute;
+  width: 62vw;                   
+  height: 35vw;                  
+  min-width: 350px;              /* prevent too-small size with min */
+  top: 230px;                    
+  right: -16vw;                  
+  border-radius: 60%;            /* create an oval/circle shape */
+  filter: blur(100px);           /* heavy blur effect */
+  z-index: -1;                   /* behind all actual content */
+  background: conic-gradient(
+    #a41045 100deg,
+    #d6278d 360deg
+  );                              /* pink-to-magenta gradient */
+}
+
+/* Global rule to prevent horizontal scrolling */
 html body{
-    overflow-x: hidden;
+    overflow-x: hidden;           
 }

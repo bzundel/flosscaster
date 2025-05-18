@@ -1,22 +1,24 @@
+
+/* Rule-set for navbar wrapper: horizontally center the nav items and give top spacing */
 .navbar{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  top: 0;
-  margin-top: 30px;
+  display: flex;            /* use Flexbox layout */
+  /*align-items: center;*/      /*  center items */
+  justify-content: center;  /* horizontally center items */
+  margin-top: 30px;         /* 30px space above the navbar */
 }
 
+/* Rule-set for the main header inside the navbar:
+style with font settings and hover effect*/
 .mainHeader {
-    color: #fff;
-    font-family: 'Inter', sans-serif;
-    font-size: 2rem;
-    font-weight:800;
-    text-decoration: none;
-    transition-duration: 0.5s;
+    color: #fff;                      /* white text */
+    font-family: 'Inter', sans-serif;   /* consistent typeface */
+    font-size: 3rem;                    /* 32px font size */
+    font-weight:800;                    /* extra-bold */
+    text-decoration: none;              /* remove underline */
+    transition-duration: 0.5s;          /* smooth size change on hover */
   }
   
 .mainHeader:hover{
-    cursor: pointer;
-    font-size: 2.2rem;
-    transition-duration: 0.5s;
+    cursor: pointer;                    /* show hand cursor */
+    font-size: 3.1rem;                  /* enlarge to 3.1rem on hover */
   }
