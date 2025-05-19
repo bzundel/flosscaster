@@ -35,13 +35,13 @@ def add_episode_to_podcast(title: str, url: str, description: str):
     root = etree.fromstring(feed_content)
 
     # Neue Episode hinzufügen
-    new_episode_pubDate = str(datetime.datetime.now())
+    new_episode_pub_date = str(datetime.datetime.now())
 
     # Erstelle ein neues Item
     new_item = etree.Element('item')
     etree.SubElement(new_item, 'title').text = title
     etree.SubElement(new_item, 'description').text = description
-    etree.SubElement(new_item, 'pubDate').text = new_episode_pubDate
+    etree.SubElement(new_item, 'pubDate').text = new_episode_pub_date
     enclosure = etree.SubElement(new_item, 'enclosure')
     enclosure.set('url', url)
     enclosure.set('type', 'audio/mpeg')
