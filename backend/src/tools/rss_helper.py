@@ -5,9 +5,17 @@ from lxml import etree
 
 RSS_FILE = os.getenv("RSS_FILE") # fetch target rss file from env var. must be given as relative path (./test.rss instead of test.rss)
 
+# Datum im format ISO 8601
+
 RSS_TEMPLATE = """<?xml version='1.0' encoding='UTF-8'?>
 <rss version="2.0">
   <channel>
+    <title>6 Sekunden podcast</title>
+    <link>https://example.com/podcast</link>
+    <description>Dies ist ein Beispiel-Podcast.</description>
+    <language>de</language>
+    <pubDate>2023-01-01 00:00:00.000000</pubDate>
+    <lastBuildDate>2025-05-18 10:36:56.310687</lastBuildDate>
   </channel>
 </rss>
 """
