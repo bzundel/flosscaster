@@ -1,0 +1,9 @@
+.notice {
+  display: flex;
+  justify-content: center;
+  background-color: #ff0000;
+  top: 0;
+  padding: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
