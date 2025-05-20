@@ -227,4 +227,7 @@ if __name__ == "__main__":
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS podcasts(id INTEGER PRIMARY KEY, title, description, date, filepath)")
     con.close()
+    rss_helper.create_template_if_not_exists()
+
     app.run(host="0.0.0.0", port = 1111, debug = True)
+
