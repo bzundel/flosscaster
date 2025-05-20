@@ -1,11 +1,8 @@
-import argparse
 import os
 import sys
-import time
 
 from mastodon import Mastodon
 from dotenv import load_dotenv
-import feedparser
 
 def masttoot(title: str, url: str, description: str):
     """Publishes a new toot using the input, also sends a reply to the announcement with the description."""
