@@ -500,6 +500,47 @@ def add_episode_to_podcast(title: str, url: str, description: str):
     print(f'Die neue Episode "{title}" wurde erfolgreich zu {filename} hinzugefuegt.')
 \end{lstlisting}
 
+\subsection{Publikation auf einem Social Media Feed \small{(Dwipa Flügel)}}
+
+\subsubsection{Ziel}
+Das Ziel ist es auf mindestens einem Social Feed eine Ankündigung zu veröffentlichen, wenn eine neue Folge des Podcastes veröffentlicht wird. Vorteilhaft sollte diese Ankündigung dabei den Titel und die URL des Podcastes erhalten, damit die Zuhörer einen kleinen Überblick bekommen, als auch die möglichkeit bei Interesse direkt auf die neue Episode zuzugreifen über die URL.
+
+\subsubsection{Auswahl und Entscheidung}
+Es gibt eine große Auswahl an Social Media Plattformen auf denen man seine Anküdigungen veröffentlichen kann, haben uns aber im Kontext dieses FLOSS-Projektes für Mastodon entschieden. Mastodon ist eine quelloffene dezentralisierte Social Media Plattform und Teil des "Fediverse", einem Netzwerk von Servern die unabhängig voneinander operieren, welche das ActivityPub-Protokoll benutzen um miteinander zu kommunizieren. Hierbei können sich Benutzer frei aussuchen auf welcher Instanz sie ihren Account erstellen und trotzdem mit anderen Instanzen interagieren. In unserem Falle haben wir uns für die Hauptinstanz mastodon.social entschieden, da diese Leuten frei erlaubt einen Account herzustellen und nicht Einladungsbasierend ist, als auch die Benutzung von Bots nicht untersagt ist; da jede Instanz ihre eigenen Regeln besitzt, sollten diese auch befolgt werden.
+
+\subsubsection{Zugriff auf die API}
+Um mit unserer Mastodon-Instanz zu kommunizieren wird eine API-Verbindung gebraucht, da wir uns entschieden haben das Backend unseres Projektes in Python zu schreiben, bietet sich hierfür das \texttt{Mastodon.py} Modul an, welches "feature complete" ist. Zudem werden für die Benutzung der API Zugriffsdaten benötigt, welche generiert werden indem man auf der ausgewählten Instanz eine Anwendung registriert. Hier empfiehlt es sich dies über die UI der Instanz zu machen, welche unter \url{https://mastodon.social/settings/applications} gefunden werden kann.
+
+\subsubsection{Probleme}
+\begin{sloppypar}
+Während meiner Forschung bezüglich der Moglichkeiten, wie man Podcast-Episoden automatisch ankündigt bin ich auf folgenden Blog-Post gestoßen: \url{https://c20d.blog/posts/2023/03/tootrss-utility/}. In diesem wurde ein Utility-Tool vorgestellt, bei dem neuhinzugefügte RSS-Items automatisch auf einen Mastodon-Account veröffentlicht werden. Dadurch das der Podcast auf einem RSS-Feed aufgebaut ist, hatte mich dieser Ansatz neugierig gemacht und ich hatte vor unsere eigene Version zu programmieren, welche auf SQLite aufgebaut war und nicht auf Amazons DynamoDB. Hier wurde das Paket feedparser benutzt, welches wie oben von Alwin beschrieben gewisse Probleme mit sich brachte, die sich im Verlauf der Entwicklung problematisch herausgestellt hat. Das Umgehen des RSS-Feedes hatte sich dadurch Problematisch gemacht, da das Paket beim parsing ein FeedParserDictionary ausgibt, wodurch sich das sortieren des RSS-Feedes auf das neuste Item mittels sorted() als nicht möglich erwieß. Ein Ansatz, der hier funktioniert hätte, welcher vom Autor des obig genannten Blog-Postes benutzt wurde, war das kreieren einer eigenen Klasse um gewisse Hilffunktionen aufzurufen, welchen ich als unverhältnissmäßigen Aufwand ansah. Nachdem ich mir einige Gedanken gemacht hatte und mir Alwins Code angeschaut habe, da er verantwortlich war für den RSS-Feed, musste ich mir eingestehen, dass das Design und die vorangehensweise sich als schlicht ineffizient herausgestellt hat. Dadurch das der Feed von uns verwaltet wird und die neuen Podcast-Episoden als neue Items in den Feed hinzufügt werden mit allen relevanten informationen für das veröffentlichen eines Tootes, hatte es weitaus mehr Sinn ergeben, ein Skript zu bauen, welches den gleichen Input benutzt und direkt danach aufgerufen wird.
+\end{sloppypar}
+
+Da wir hier mit Zugangsdaten arbeiten, sollte diese Informationen als Umgebungsvariablen gespeichert werden. Während des entwickeln hatte ich hierfür eine .env-Datei benutzt, welche ich natürlich in einer gitignore inkludiert hatte.
+
+\begin{lstlisting}[language=Python, caption=Vollständige Funktion des "Autotooting"]
+def masttoot(title: str, url: str, description: str):
+    """Publishes a new toot using the input, also sends a reply to the announcement with the description."""
+
+    post_text = "The Flosscasters have released a new podcast episode: " + title + ". Check it out @ " + url
+
+    #Mastodon-Instanz
+    mastodon = Mastodon(
+        client_id = os.getenv("MASTODON_CLIENT_KEY"),
+        client_secret = os.getenv("MASTODON_CLIENT_SECRET"),
+        access_token = os.getenv("MASTODON_ACCESS_TOKEN"),
+        api_base_url = os.getenv("MASTODON_BASE_URL")
+    )
+
+    #Publish the toot and reply to it with the description
+    to_reply = mastodon.status_post(post_text)
+    mastodon.status_post(description, in_reply_to_id=to_reply.id)
+\end{lstlisting}
+
+\subsubsection{Gelerntes}
+
+Ich habe leider verhältnismäßig viel Zeit investiert in ein Design, das sich nachträglich als ineffizient herausgestellt hat während der Entwicklung, wenn es eine weitaus einfachere Lösung gab. Im Kontext eines Uni-Projektes sollte dies etwas weniger Konsequenzen haben, aber im zukünftigen Kontext der Industrie sind das redundante Personalkosten. Da ich selber bei einem IT-Dienstleister arbeite, jedoch im 1st-Level Support, ist dies für mich eine wertvolle Lektion, da es schwer ist bei einem Kunden gewisse Stunden zu rechtfertigen, wenn diese nicht effektiv genutzt werden.
+
 \newpage
 
 \bibliographystyle{plain}
