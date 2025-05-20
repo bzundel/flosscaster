@@ -10,7 +10,7 @@ from flasgger import Swagger
 from tools import rss_helper, masttoot
 
 DATABASE_FILE = os.getenv("DATABASE_FILE")
-UPLOAD_PATH = "uploads"
+UPLOAD_PATH = os.getenv("UPLOAD_PATH")
 FRONTEND_URL = os.getenv("FRONTEND_URL")
 RSS_FILE = os.getenv("RSS_FILE")
 
