@@ -3,6 +3,7 @@
 ### Prerequisites
 Enviorment `.env` variables (best to create `.env.test` in the `/tests` directory):
 ```
+export FLOSSCASTER_DATA_PATH=backend/tests/data
 export DATABASE_FILE=backend/tests/data/test.db
 export UPLOAD_PATH=backend/tests/uploads
 export RSS_FILE=backend/tests/data/feed.xml
