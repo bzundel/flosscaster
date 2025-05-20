@@ -9,4 +9,6 @@ COPY . .
 
 EXPOSE 5000
 
-CMD ["python", "src/main.py"]
+ENV PYTHONPATH=src
+
+CMD ["gunicorn", "--bind", "0.0.0.0:1111", "src.main:app"]
