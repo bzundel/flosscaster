@@ -172,8 +172,10 @@ class Create(Resource):
         con.commit()
         con.close()
 
-        rss_helper.add_episode_to_podcast(title, FRONTEND_URL, description, str(file_size)) # TODO point to episode section (with # notation thingy)
-        masttoot.masttoot(title, FRONTEND_URL, description)
+        rss_helper.add_episode_to_podcast(title, FRONTEND_URL, description, str(file_size))
+
+        if not os.getenv("MASTODON_ACCESS_TOKEN") is None:
+            masttoot.masttoot(title, FRONTEND_URL, description)
 
         return f"{new_id}", 200
 
@@ -212,7 +214,6 @@ class GetRSS(Resource):
                 description: RSS file was not found in the filesystem
         """
         feed_path = os.path.abspath(RSS_FILE)
-        print(feed_path)
         return send_file(feed_path)
 
 api.add_resource(List, "/api/list")
@@ -226,4 +227,7 @@ if __name__ == "__main__":
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS podcasts(id INTEGER PRIMARY KEY, title, description, date, filepath)")
     con.close()
+    rss_helper.create_template_if_not_exists()
+
     app.run(host="0.0.0.0", port = 1111, debug = True)
+

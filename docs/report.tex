@@ -403,7 +403,7 @@ Ab diesem Bereich beginnen die Items, in denen die Infos über die neuen Podcast
     \item Veröffentlichungsdatum
 \end{itemize}
 
-Nach allen Items wird der Channel geschlossen und der RSS Feed beendet.\cite{RSS}
+Nach allen Items wird der Channel geschlossen und der RSS Feed beendet \cite{rss}.
 
 \subsubsection{Probleme}
 Das Paket \texttt{feedparser} \cite{feedparser} hat leider das Problem, dass es die sogenannte Enclosure URL nicht parsen kann. Diese ist jedoch essenziell für den Podcatcher, um die Datei finden zu können (Issue: \#285 enclosure not parsed). Das Problem besteht nicht beim ersten Erstellen des Feeds, sondern erst beim Wiedereinlesen des Feeds. Eine mögliche Lösung hätte sein können, die Infos alle redundant zu speichern, jedoch habe ich diese Lösung schnell verworfen, da sie mit einem unverhältnismäßigen Aufwand verbunden wäre. Eine weitere Lösung könnte das Modul RSS in Ruby sein, jedoch wollte ich die Problematik in Python lösen, da die meisten Teile unseres Projekts bereits in Python geschrieben waren und ich selber bisher noch kein Ruby geschrieben habe.
@@ -477,7 +477,7 @@ def add_episode_to_podcast(title: str, url: str, description: str, length: str):
     # XML-Parser initialisieren
     root = etree.fromstring(feed_content)
 
-    # Neue Episode hinzufügen
+    # Neue Episode hinzufuegen
     new_episode_pub_date = datetime.datetime.now(pytz.timezone('Europe/Berlin')).strftime('%a, %d %b %Y %H:%M:%S %z')
 
     # Erstelle ein neues Item
@@ -490,7 +490,7 @@ def add_episode_to_podcast(title: str, url: str, description: str, length: str):
     enclosure.set('length', length)
     enclosure.set('type', 'audio/mpeg')
 
-    # Füge das neue Item zum Channel hinzu
+    # Fuege das neue Item zum Channel hinzu
     channel = root.find('channel')
     channel.append(new_item)
     
@@ -498,7 +498,7 @@ def add_episode_to_podcast(title: str, url: str, description: str, length: str):
     last_build_date = channel.find('lastBuildDate')
     last_build_date.text = datetime.datetime.now(pytz.timezone('Europe/Berlin')).strftime('%a, %d %b %Y %H:%M:%S %z')
 
-    # Speichern des aktualisierten Feeds mit Zeilenumbrüchen und Einrückungen
+    # Speichern des aktualisierten Feeds mit Zeilenumbruechen und Einrueckungen
     with open(RSS_FILE, 'wb') as f:
         f.write(etree.tostring(root, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
 \end{lstlisting}
@@ -516,7 +516,7 @@ Um mit unserer Mastodon-Instanz zu kommunizieren wird eine API-Verbindung gebrau
 
 \subsubsection{Probleme}
 \begin{sloppypar}
-  Während meiner Forschung bezüglich der Moglichkeiten, wie man Podcast-Episoden automatisch ankündigt bin ich auf folgenden Blog-Post gestoßen: \url{https://c20d.blog/posts/2023/03/tootrss-utility/}. In diesem wurde ein Utility-Tool vorgestellt, bei dem neuhinzugefügte RSS-Items automatisch auf einen Mastodon-Account veröffentlicht werden. Dadurch das der Podcast auf einem RSS-Feed aufgebaut ist, hatte mich dieser Ansatz neugierig gemacht und ich hatte vor unsere eigene Version zu programmieren, welche auf SQLite aufgebaut war und nicht auf Amazons DynamoDB. Hier wurde das Paket feedparser benutzt, welches wie oben von Alwin beschrieben gewisse Probleme mit sich brachte, die sich im Verlauf der Entwicklung problematisch herausgestellt hat. Das Umgehen des RSS-Feedes hatte sich dadurch Problematisch gemacht, da das Paket beim parsing ein FeedParserDictionary ausgibt, wodurch sich das sortieren des RSS-Feedes auf das neuste Item mittels \texttt{sorted()} als nicht möglich erwieß. Ein Ansatz, der hier funktioniert hätte, welcher vom Autor des obig genannten Blog-Postes benutzt wurde, war das kreieren einer eigenen Klasse um gewisse Hilffunktionen aufzurufen, welchen ich als unverhältnissmäßigen Aufwand ansah. Nachdem ich mir einige Gedanken gemacht hatte und mir Alwins Code angeschaut habe, da er verantwortlich war für den RSS-Feed, musste ich mir eingestehen, dass das Design und die vorangehensweise sich als schlicht ineffizient herausgestellt hat. Dadurch das der Feed von uns verwaltet wird und die neuen Podcast-Episoden als neue Items in den Feed hinzufügt werden mit allen relevanten informationen für das veröffentlichen eines Tootes, hatte es weitaus mehr Sinn ergeben, ein Skript zu bauen, welches den gleichen Input benutzt und direkt danach aufgerufen wird.
+  Während meiner Forschung bezüglich der Moglichkeiten, wie man Podcast-Episoden automatisch ankündigt bin ich auf einen Blog-Post gestoßen, der ein Utility-Tool vorstellt, bei dem neuhinzugefügte RSS-Items automatisch auf einen Mastodon-Account veröffentlicht werden \cite{tootrss}. In diesem wurde ein Utility-Tool vorgestellt, bei dem neuhinzugefügte RSS-Items automatisch auf einen Mastodon-Account veröffentlicht werden. Dadurch das der Podcast auf einem RSS-Feed aufgebaut ist, hatte mich dieser Ansatz neugierig gemacht und ich hatte vor unsere eigene Version zu programmieren, welche auf SQLite aufgebaut war und nicht auf Amazons DynamoDB. Hier wurde das Paket feedparser benutzt, welches wie oben von Alwin beschrieben gewisse Probleme mit sich brachte, die sich im Verlauf der Entwicklung problematisch herausgestellt hat. Das Umgehen des RSS-Feedes hatte sich dadurch Problematisch gemacht, da das Paket beim parsing ein FeedParserDictionary ausgibt, wodurch sich das sortieren des RSS-Feedes auf das neuste Item mittels \texttt{sorted()} als nicht möglich erwieß. Ein Ansatz, der hier funktioniert hätte, welcher vom Autor des obig genannten Blog-Postes benutzt wurde, war das kreieren einer eigenen Klasse um gewisse Hilffunktionen aufzurufen, welchen ich als unverhältnissmäßigen Aufwand ansah. Nachdem ich mir einige Gedanken gemacht hatte und mir Alwins Code angeschaut habe, da er verantwortlich war für den RSS-Feed, musste ich mir eingestehen, dass das Design und die vorangehensweise sich als schlicht ineffizient herausgestellt hat. Dadurch das der Feed von uns verwaltet wird und die neuen Podcast-Episoden als neue Items in den Feed hinzufügt werden mit allen relevanten informationen für das veröffentlichen eines Tootes, hatte es weitaus mehr Sinn ergeben, ein Skript zu bauen, welches den gleichen Input benutzt und direkt danach aufgerufen wird.
   Da wir hier mit Zugangsdaten arbeiten, sollte diese Informationen als Umgebungsvariablen gespeichert werden. Während des entwickeln hatte ich hierfür eine \texttt{.env}-Datei benutzt, welche ich natürlich in einer \texttt{gitignore} inkludiert hatte.
 \end{sloppypar}
 
