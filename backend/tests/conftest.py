@@ -6,6 +6,7 @@ import os
 import sqlite3
 
 from backend.src.main import app
+from backend.tests.random_file_generator import generate_mp3_size
 
 DATABASE_FILE = os.getenv("DATABASE_FILE")
 DATA_PATH = os.getenv("UPLOAD_PATH")
@@ -48,3 +49,8 @@ def database_entry_id(init_testing):
     con.commit()
     con.close()
     return lastid
+
+@pytest.fixture()
+def upload_file(init_testing):
+    path = generate_mp3_size()
+    return path.replace(DATA_PATH + "/", "")

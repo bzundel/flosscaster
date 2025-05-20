@@ -22,7 +22,7 @@ def generate_random_ascii(length: int = 20, letters: bool = True, numbers: bool 
 
 def generate_random_ascii_path(file_name: Union[str, object] = MISSING) -> str:
     if file_name == MISSING:
-        file_name = generate_random_ascii();
+        file_name = generate_random_ascii()
     return os.path.join(DATA_PATH, file_name)
 
 def generate_mp3_tts(text_to_speech: str = "Test FLOSScast", lang: str = "de") -> str:
