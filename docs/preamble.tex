@@ -5,6 +5,7 @@
 \usepackage{multirow}
 \usepackage{color}
 \usepackage[T1]{fontenc}
+\usepackage{setspace}
 
 \definecolor{codecomment}{rgb}{0,0.6,0}
 \definecolor{codelinenumber}{rgb}{0.5,0.5,0.5}
@@ -14,19 +15,22 @@
 \makeatletter
 \def\@maketitle{
   \null
-  \vskip 3cm
+  \vskip 4cm
   \begin{center}%
-    {\Large\bfseries \@title \par}
-    \vskip 3em
+    {%
+      \doublespacing
+      \Large\bfseries \@title \par
+    }
+    \vskip 4em
     {\normalsize
       \lineskip .5em
       \begin{tabular}[t]{c}
         \@author
     \end{tabular}\par}
+    \vskip 4em
+    {\normalsize \textbf{\@date}}
     \vskip 1cm
-    {\normalsize \@date}
-    \vskip 1cm
-    \textbf{ADD GITHUB REPO LINK HERE}
+    \url{https://github.com/bzundel/flosscaster}
   \end{center}%
   \par
   \vskip 1.5em}
