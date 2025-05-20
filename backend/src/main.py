@@ -152,8 +152,8 @@ class Create(Resource):
         title = request.form.get("title")
         description = request.form.get("description")
         audio_file = request.files.get("audio")
-        audFile = audio_file.read()
-        file_size = len(audFile)
+        audio_file_read = audio_file.read()
+        file_size = len(audio_file_read)
 
         if audio_file.mimetype != "audio/mpeg":
             abort(400, error_message="Invalid file format; must be audio/mpeg")
