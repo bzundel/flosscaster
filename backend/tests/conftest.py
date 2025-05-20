@@ -23,3 +23,7 @@ def empty_database(init_testing):
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS podcasts(id INTEGER PRIMARY KEY, title, description, date, filepath)")
     con.close()
+
+@pytest.fixture()
+def client(init_testing):
+    return app.test_client()
