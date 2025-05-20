@@ -1,6 +1,7 @@
 import os
 import argparse
 import datetime
+import pytz
 from lxml import etree
 
 def add_episode_to_podcast(title: str, url: str, description: str):
@@ -19,7 +20,7 @@ def add_episode_to_podcast(title: str, url: str, description: str):
     root = etree.fromstring(feed_content)
 
     # Neue Episode hinzufügen
-    new_episode_pubDate = str(datetime.datetime.now())
+    new_episode_pubDate = datetime.datetime.now(pytz.timezone('Europe/Berlin')).strftime('%a, %d %b %Y %H:%M:%S %z')
 
     # Erstelle ein neues Item
     new_item = etree.Element('item')
@@ -28,6 +29,7 @@ def add_episode_to_podcast(title: str, url: str, description: str):
     etree.SubElement(new_item, 'pubDate').text = new_episode_pubDate
     enclosure = etree.SubElement(new_item, 'enclosure')
     enclosure.set('url', url)
+    enclosure.set('length', str(os.path.getsize(os.path.join(os.environ['UPLOAD_PATH'], os.path.basename(url)))))
     enclosure.set('type', 'audio/mpeg')
 
     # Füge das neue Item zum Channel hinzu
@@ -36,7 +38,7 @@ def add_episode_to_podcast(title: str, url: str, description: str):
     
     # Aktualisiere lastBuildDate
     last_build_date = channel.find('lastBuildDate')
-    last_build_date.text = str(datetime.datetime.now())
+    last_build_date.text = datetime.datetime.now(pytz.timezone('Europe/Berlin')).strftime('%a, %d %b %Y %H:%M:%S %z')
 
     # Speichern des aktualisierten Feeds mit Zeilenumbrüchen und Einrückungen
     with open(file_path, 'wb') as f:

@@ -113,7 +113,7 @@ class GetById(Resource):
 
         con = sqlite3.connect(DATABASE_FILE)
         cur = con.cursor()
-        cur.execute(f"SELECT * FROM podcasts WHERE id=?", (id))
+        cur.execute(f"SELECT * FROM podcasts WHERE id=?", id)
         rows = cur.fetchall()
         con.close()
 
