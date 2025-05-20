@@ -399,7 +399,7 @@ Ab diesem Bereich beginnen die Items, in denen die Infos über die neuen Podcast
     \item Veröffentlichungsdatum
 \end{itemize}
 
-Nach allen Items wird der Channel geschlossen und der RSS Feed beendet.
+Nach allen Items wird der Channel geschlossen und der RSS Feed beendet.\cite{RSS}
 
 \subsubsection{Probleme}
 Das Paket \texttt{feedparser} \cite{feedparser} hat leider das Problem, dass es die sogenannte Enclosure URL nicht parsen kann. Diese ist jedoch essenziell für den Podcatcher, um die Datei finden zu können (Issue: \#285 enclosure not parsed). Das Problem besteht nicht beim ersten Erstellen des Feeds, sondern erst beim Wiedereinlesen des Feeds. Eine mögliche Lösung hätte sein können, die Infos alle redundant zu speichern, jedoch habe ich diese Lösung schnell verworfen, da sie mit einem unverhältnismäßigen Aufwand verbunden wäre. Eine weitere Lösung könnte das Modul RSS in Ruby sein, jedoch wollte ich die Problematik in Python lösen, da die meisten Teile unseres Projekts bereits in Python geschrieben waren und ich selber bisher noch kein Ruby geschrieben habe.
