@@ -194,10 +194,10 @@ class GetFileByFilename(Resource):
         """
         path = os.path.abspath(os.path.join(UPLOAD_PATH, filename))
 
-        try:
-            return send_file(path)
-        except:
-            return 404
+        if not os.path.exists(path):
+            abort(404, error_message="Given file was not found")
+
+        return send_file(path)
 
 class GetRSS(Resource):
     def get(self):
