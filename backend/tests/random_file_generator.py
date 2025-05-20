@@ -45,6 +45,7 @@ def generate_mp3_size(kilobyte: int = 2048, path: Union[str, object] = MISSING) 
         path = generate_random_ascii_path(generate_random_ascii())
     length = calculate_mp3_duration(kilobyte)
     silent_audio = AudioSegment.silent(duration=length * 1000)  # *1000 because it is in ms
+    path += ".mp3"
     silent_audio.export(path, format="mp3", bitrate=f"{bitrate}k")
     return path
 
@@ -52,5 +53,6 @@ def generate_mp3_duration(duration: int = 60, path: Union[str, object] = MISSING
     if path == MISSING:
         path = generate_random_ascii_path(generate_random_ascii())
     silent_audio = AudioSegment.silent(duration=duration * 1000)
+    path += ".mp3"
     silent_audio.export(path, format="mp3", bitrate=f"{bitrate}k")
     return path

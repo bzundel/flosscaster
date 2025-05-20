@@ -36,7 +36,7 @@ def empty_database(init_testing):
     con.close()
 
 @pytest.fixture()
-def database_entry(init_testing):
+def database_entry_id(init_testing):
     title = "Test entry"
     description = "Test description"
     date = datetime.now().strftime("%c")
