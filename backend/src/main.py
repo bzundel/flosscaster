@@ -152,6 +152,8 @@ class Create(Resource):
         title = request.form.get("title")
         description = request.form.get("description")
         audio_file = request.files.get("audio")
+        audFile = audio_file.read()
+        file_size = len(audFile)
 
         if audio_file.mimetype != "audio/mpeg":
             abort(400, error_message="Invalid file format; must be audio/mpeg")
@@ -170,7 +172,7 @@ class Create(Resource):
         con.commit()
         con.close()
 
-        rss_helper.add_episode_to_podcast(title, FRONTEND_URL, description) # TODO point to episode section (with # notation thingy)
+        rss_helper.add_episode_to_podcast(title, FRONTEND_URL, description, file_size) # TODO point to episode section (with # notation thingy)
         masttoot.masttoot(title, FRONTEND_URL, description)
 
         return f"{new_id}", 200

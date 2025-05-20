@@ -21,7 +21,7 @@ RSS_TEMPLATE = """<?xml version='1.0' encoding='UTF-8'?>
 </rss>
 """
 
-def add_episode_to_podcast(title: str, url: str, description: str):
+def add_episode_to_podcast(title: str, url: str, description: str, length: str):
     if not os.path.exists(os.path.dirname(RSS_FILE)):
         os.makedirs(os.path.dirname(RSS_FILE), exist_ok = True) # create file path if it doesn't exist
 
@@ -45,7 +45,7 @@ def add_episode_to_podcast(title: str, url: str, description: str):
     etree.SubElement(new_item, 'pubDate').text = new_episode_pub_date
     enclosure = etree.SubElement(new_item, 'enclosure')
     enclosure.set('url', url)
-    enclosure.set('length', str(os.path.getsize(os.path.join(os.environ['UPLOAD_PATH'], os.path.basename(url)))))
+    enclosure.set('length', length)
     enclosure.set('type', 'audio/mpeg')
 
     # Füge das neue Item zum Channel hinzu

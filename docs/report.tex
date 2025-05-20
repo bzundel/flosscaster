@@ -399,7 +399,7 @@ Ab diesem Bereich beginnen die Items, in denen die Infos über die neuen Podcast
     \item Veröffentlichungsdatum
 \end{itemize}
 
-Nach allen Items wird der Channel geschlossen und der RSS Feed beendet.
+Nach allen Items wird der Channel geschlossen und der RSS Feed beendet.\cite{RSS}
 
 \subsubsection{Probleme}
 Das Paket \texttt{feedparser} \cite{feedparser} hat leider das Problem, dass es die sogenannte Enclosure URL nicht parsen kann. Diese ist jedoch essenziell für den Podcatcher, um die Datei finden zu können (Issue: \#285 enclosure not parsed). Das Problem besteht nicht beim ersten Erstellen des Feeds, sondern erst beim Wiedereinlesen des Feeds. Eine mögliche Lösung hätte sein können, die Infos alle redundant zu speichern, jedoch habe ich diese Lösung schnell verworfen, da sie mit einem unverhältnismäßigen Aufwand verbunden wäre. Eine weitere Lösung könnte das Modul RSS in Ruby sein, jedoch wollte ich die Problematik in Python lösen, da die meisten Teile unseres Projekts bereits in Python geschrieben waren und ich selber bisher noch kein Ruby geschrieben habe.
@@ -459,46 +459,44 @@ enclosure.set('type', 'audio/mpeg')
 Auch wird im Kopf das \texttt{lastBuildDate} auf den aktuellen Moment abgeändert. Zuletzt wird der neue XML-Feed dann in einen Ordner mit dem Namen \texttt{rss} abgespeichert und kann vom Server publiziert werden.
 
 \begin{lstlisting}[language=Python, caption=Vollständige Funktion des RSS-Feed Generators]
-def add_episode_to_podcast(title: str, url: str, description: str):
-    # Verzeichnis und Dateiname
-    directory = './rss'  # Aktuelles Verzeichnis mit dem Unterordner 'rss'
-    filename = 'podcast.xml'  # Name der RSS-Datei
+def add_episode_to_podcast(title: str, url: str, description: str, length: str):
+    if not os.path.exists(os.path.dirname(RSS_FILE)):
+        os.makedirs(os.path.dirname(RSS_FILE), exist_ok = True) # create file path if it doesn't exist
 
-    # Vollstaendiger Pfad zur Datei
-    file_path = os.path.join(directory, filename)
+    if not os.path.isfile(RSS_FILE):
+        with open(RSS_FILE, "w") as f:
+            f.write(RSS_TEMPLATE) # create rss boilerplate of no feed exists
 
-    # RSS-Feed laden
-    with open(file_path, 'rb') as f:
+    with open(RSS_FILE, 'rb') as f:
         feed_content = f.read()
 
     # XML-Parser initialisieren
     root = etree.fromstring(feed_content)
 
-    # Neue Episode hinzufuegen
-    new_episode_pubDate = datetime.datetime.now(pytz.timezone('Europe/Berlin')).strftime('%a, %d %b %Y %H:%M:%S %z')
+    # Neue Episode hinzufügen
+    new_episode_pub_date = datetime.datetime.now(pytz.timezone('Europe/Berlin')).strftime('%a, %d %b %Y %H:%M:%S %z')
 
     # Erstelle ein neues Item
     new_item = etree.Element('item')
     etree.SubElement(new_item, 'title').text = title
     etree.SubElement(new_item, 'description').text = description
-    etree.SubElement(new_item, 'pubDate').text = new_episode_pubDate
+    etree.SubElement(new_item, 'pubDate').text = new_episode_pub_date
     enclosure = etree.SubElement(new_item, 'enclosure')
     enclosure.set('url', url)
+    enclosure.set('length', length)
     enclosure.set('type', 'audio/mpeg')
 
-    # Fuege das neue Item zum Channel hinzu
+    # Füge das neue Item zum Channel hinzu
     channel = root.find('channel')
     channel.append(new_item)
-
+    
     # Aktualisiere lastBuildDate
     last_build_date = channel.find('lastBuildDate')
     last_build_date.text = datetime.datetime.now(pytz.timezone('Europe/Berlin')).strftime('%a, %d %b %Y %H:%M:%S %z')
 
-    # Speichern des aktualisierten Feeds mit Zeilenumbruechen und Einrueckungen
-    with open(file_path, 'wb') as f:
+    # Speichern des aktualisierten Feeds mit Zeilenumbrüchen und Einrückungen
+    with open(RSS_FILE, 'wb') as f:
         f.write(etree.tostring(root, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
-
-    print(f'Die neue Episode "{title}" wurde erfolgreich zu {filename} hinzugefuegt.')
 \end{lstlisting}
 
 \subsection{Publikation auf einem Social Media Feed \small{(Dwipa Flügel)}}
