@@ -5,6 +5,9 @@
 \usepackage{listings}
 \usepackage{hyperref}
 
+\graphicspath{{assets/}}
+
+
 \title{Podcast Management System "FLOSScaster" \\
 	\begin{large}
 	WP-Seminar "Quelloffene Software in der modernen Informatik" Projekt
@@ -49,11 +52,247 @@
 \newpage
 
 \tableofcontents
+\listoffigures
 \lstlistoflistings
 
 \newpage
 
+\section{Projektmanagement mit Scrum \& GitHub Projects \small{(Deniz Karaman)}}
+Um unseren Entwicklungsprozess agil zu strukturieren, haben wir Scrum mithilfe von GitHub Projects implementiert. Dabei haben wir uns an klassischen Scrum-Prinzipien orientiert und diese wie üblich an unsere Teamgröße und die Projektanforderungen angepasst. Jede Story wird dabei als Issue angelegt.
+
+Zunächst haben wir in unseren Issues sowohl Labels als auch Milestones definiert, um einen schnellen Überblick zu gewährleisten und einzelne Issues entsprechend ihrer Zuordnung hervorzuheben. Da wir unsere Stories im Team abgestimmt und deren Komplexität berücksichtigt haben, gelten die Definition of Done (DoD) sowie die Bewertung als feststehend.
+
+Folgende Labels haben wir definiert: \textit{backend}, \textit{bug}, \textit{documentation}, \textit{enhancement}, \textit{epic}, \textit{frontend}, \textit{story}, \textit{testing}. Zusätzlich zu unseren Labels benötigen wir unterschiedliche Status, für die wir folgende verwenden: \textit{Todo}, \textit{In} \textit{Progress}, \textit{Needs} \textit{Review}, \textit{Done}, \textit{Canceled}.
+
+Durch die Nutzung von Custom Fields vom Typ Iteration können wir unsere Sprints zeitlich organisieren und in wöchentlichen Zyklen abbilden. Bei der Sprintplanung in unseren Meetings haben wir zudem die Möglichkeit, sowohl die Story Points als auch die Priorität (\textit{Low}, \textit{Medium}, \textit{High}, \textit{Critical}) über Custom Fields abzubilden.
+
+Nach Abschluss eines Sprints könnte eine formale Retrospektive stattfinden. Da wir jedoch durch unsere flexiblen Arbeitszeiten agil bleiben und unsere Sprints fortlaufend anpassen wollten, haben wir auf eine feste Retrospektive verzichtet.
+
+\subsection{Darstellung Boards}
+\begin{figure}[h]
+  \caption{Screenshot der GitHub Projects Ansicht des Backlogs}
+  \centering
+  \includegraphics[width=\textwidth]{backlog.png}
+\end{figure}
+
+Um die Übersichtlichkeit weiter zu erhöhen, haben wir für jede Board-Ansicht vordefinierte Filter konfiguriert.
+
+So erhält jede Ansicht genau die Issues, die für den jeweiligen Arbeitsschritt relevant sind, und das Team behält jederzeit den passenden Fokus.
+
+\begin{figure}[h]
+  \caption{Screenshot der GitHub Projects Ansicht der Quality Assurance}
+  \centering
+  \includegraphics[width=\textwidth]{quality_assurance.png}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Backlog}: Alle geplanten User Stories und Tasks
+  \item \textbf{Current Sprint}: Die aktuell bearbeiteten Items
+  \item \textbf{Next Sprint}: Vorgemerkte Stories für den nächsten Sprint
+  \item \textbf{Quality Assurance}: Abgenommene Features in der Testphase
+  \item \textbf{Done}: Abgeschlossene Stories
+\end{itemize}
+
+Jeder Eintrag auf dem Board ist als GitHub Issue angelegt und hat folgende Felder
+
+\begin{enumerate}
+  \item Story Points (zur Aufwandsschätzung in Fibonacci)
+  \item Priority-Labels (\textit{Low}, \textit{Medium}, \textit{High}, \textit{Critical})
+  \item Sprint-Labels (z. B. \textit{Sprint1}, \textit{Sprint2}, etc.)
+  \item Status-Labels (\textit{Todo}, \textit{In Progress}, \textit{Needs review}, \textit{Done}, \textit{Canceled})
+\end{enumerate}
+
+\begin{figure}[h]
+  \caption{Screenshot der GitHub Ansicht einer Story}
+  \centering
+  \includegraphics[width=.3\textwidth]{overview.png}
+\end{figure}
+
+Durch diese enge Verzahnung von Issue-Tracking, Code-Repositories und agilen Meetings erreichen wir eine hohe Transparenz, schnelle Feedback-Zyklen und eine stetige Verbesserung unseres Workflows.
+
+\section{Static Code-Analyse (Deniz Karaman)}
+Für die statische Code‐Analyse im Backend haben wir die integrierte Inspektions-Engine von \texttt{PyCharm (JetBrains)} eingesetzt. Dabei konnten wir verschiedene Probleme im Code identifizieren. Zu den häufigsten Befunden gehörten unter anderem:
+
+\begin{itemize}
+  \item Unresolved references
+  \item Method is not declared static
+  \item PEP 8 naming convention violation 
+  \item Redundant parentheses
+  \item Shadowing built-in names
+  \item Shadowing names from outer scopes
+  \item Using equality operators to compare with None
+\end{itemize}
+
+Dank dieser statischen Prüfung konnten wir gezielt Code-Stellen verbessern – etwa fehlende Imports ergänzen, Methoden korrekt deklarieren und PEP 8-konforme Bezeichner verwenden. Durch die frühzeitige Erkennung und Behebung dieser Probleme haben wir die Qualität, Wartbarkeit und Lesbarkeit unserer Anwendung weiter gesteigert.
+
+\section{Mockup-Design und Gestaltung \small{(Patryk Brychcy \& Michel Filatoff)}}
+\subsection{Planung}
+In einem ersten Planungsschritt entschieden wir gemeinsam, dass die gesamte Funktionalität auf einer einzigen HTML-Webseite umgesetzt werden soll. Die Seite sollte so einfach, übersichtlich und benutzerfreundlich wie möglich gestaltet werden.
+
+Daraufhin habe wir mithilfe des Online-Design-Tools \textit{Figma} das erste Mockup erstellt. Dieses visuelle Konzept stellt eine minimalistische und funktionale Benutzeroberfläche dar, die sich auf die wesentlichen Elemente konzentriert.
+
+\begin{figure}[h]
+  \caption{Figma Design der Landingpage}
+  \centering
+  \includegraphics[width=0.4\textwidth]{flosscaster1.png}
+\end{figure}
+
+\begin{figure}[h]
+  \caption{Figam Design des Upload-Dialogs}
+  \centering
+  \includegraphics[width=0.3\textwidth]{flosscaster2.png}
+\end{figure}
+
+Die Webseite wurde dabei so angelegt, dass es flexibel ausbaufähig bleibt, das \textit{Flosscaster}-Logo oben am Rand ist eine Navigationsleiste (\texttt{Navbar),} wo man auch in der Zukunft eine Benutzerverwaltung integrieren könnte.
+
+Die Webseite soll den Nutzern folgendes ermöglichen:
+
+\begin{itemize}
+  \item Neue Podcast-Folgen in einem klar strukturierten Umfeld zu entdecken
+  \item Eigene Podcasts hochzuladen über einen gut sichtbaren Upload-Button
+  \item Intuitives Fenster für das Hochladen der Podcasts
+\end{itemize}
+
+\subsection{Aufbau und Layout}
+\subsubsection{Hero-Sektion}
+\begin{itemize}
+  \item \textbf{Titel \& Claim}: „Podcasts without limits“ – in großer, fetter Schrift als Blickfang
+  \item \textbf{Call-to-Action-Button}: Handlungsaufforderung als „Hear now“-Button direkt unter dem Text
+  \item \textbf{Visuelles Element}: Ein Porträt einer Person mit Kopfhörern vor einem Pink-Gradient-Hintergrund, das für Emotionalität und Wiedererkennbarkeit sorgt
+\end{itemize}
+
+\subsubsection{Latest Episodes}
+\begin{itemize}
+  \item \textbf{Überschrift}: Deutlich hervorgehoben mit weißer, serifenloser Schrift
+  \item \textbf{Upload-Button}: Oben rechts platziert, damit der User mit Leichtigkeit neue Podcasts hochladen kann.
+  \item \textbf{Episoden-Karten}:
+  \begin{itemize}
+    \item Abgerundete Ecken und leicht abgesetzter Hintergrund (dunkles Anthrazit)
+  \end{itemize}
+  \item \textbf{Jede Karte enthält}:
+  \begin{itemize}
+    \item Titel der Episode in fetter, weißer Schrift
+    \item Kurzbeschreibung in grauer Schrift (mehrzeilig, lesefreundlich)
+    \item Audioplayer mit Play/Pause-Funktion, Lautstärkeregelung und Fortschrittsbalken
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Updates}
+Das Design wurde im Laufe der Tests in mehreren Punkten überarbeitet.
+
+\begin{itemize}
+  \item Die Buttons sind pink und der Hero-Bereich hat pinke Akzente
+  \item Die Liste mit Podcasts wurde nach unten versetzt und der „Hear Now“-Button scrollt nach unten auf die Podcasts-Liste
+  \item Das Upload-Fenster wurde überarbeitet.
+\end{itemize}
+
+\subsubsection{Umsetzung \& Endergebnis}
+Durch gezielte Anpassungen in den CSS-Dateien konnte das Design final umgesetzt werden. Das Ergebnis ist eine schlichte, funktionale und optisch ansprechende Webseite.
+
+\begin{figure}[h]
+  \caption{Implementiertes Design der Landingpage}
+  \centering
+  \includegraphics[width=0.7\textwidth]{flosscaster3.png}
+\end{figure}
+
+\subsubsection{Verwendete Designprinzipien}
+
+\begin{itemize}
+  \item \textbf{Dark Mode} mit pinken Akzenten
+  \item \textbf{Akzentfarbe Pink} (\texttt{\#D81B60}) für interaktive Elemente
+  \item \textbf{Weißer Text} für Überschriften zur klaren Strukturierung
+  \item \textbf{Grauer Text} für Fließtexte und sekundäre Informationen
+  \item \textbf{Abgerundete Buttons \& Karten}
+  \item \textbf{Intuitive Buttons} mit klarer Beschriftung
+  \item \textbf{Font Smoothing}: antialiased für bessere Textdarstellung
+  \item \textbf{Smoothed Interface} für visuelle Harmonie und Benutzerfreundlichkeit
+  \item \textbf{Hover-Effekte} für die Buttons und das Navbar
+  \item \textbf{Verzicht auf überflüssige Elemente}
+\end{itemize}
+
+\begin{figure}[h]
+  \caption{Implementiertes Design der Podcast-Episoden}
+  \centering
+  \includegraphics[width=0.9\textwidth]{flosscaster4.png}
+\end{figure}
+
 \section{Technische Dokumentation}
+\subsection{Frontend \small{(Michael Filatoff)}}
+Das Frontend haben wir mit den folgenden drei Kerntechnologien erstellt. \texttt{HTML5} wurde für die Struktur verwendet, \texttt{CSS3} für das Styling und JavaScript für die Funktionalität. Grundlegend wurde die gesamte UI mit der populären JavaScript-Bibliothek \texttt{React} zur Erstellung verwendet. Da \texttt{React} den Entwicklungsprozess vereinfacht und strukturiert, basiert unsere Architektur auf der \textit{Komponenten basierte Architektur}, die es uns ermöglicht, wiederverwendbare UI-Komponente zu erstellen. Außerdem benutzten wir die Zustandsmanagementfunktionen, welche Funktionen wie \texttt{useState}, \texttt{useEffect}, etc... anbieten. Diese helfen, die Daten, welche wir von dem API-Endpoint aus dem Backend erhalten, zu speichern und zu verwenden.
+
+\subsubsection{Komponenten}
+Grundlegend sind die Komponenten mit einer \texttt{.jsx} und \texttt{.module.css} Datei ausgestattet. Das \texttt{JSX} ist eine Erweiterung von JavaScript, die es ermöglicht, HTML Code innerhalb von JavaScript-Dateien zu schreiben. Die CSS Struktur basiert auf das Modul-Prinzip, wo Klassen und Namen nur lokal und nicht global gültig sind. Diese sind erst mit dem Import der CSS-Datei gültig.
+
+\paragraph{Bar}
+Die Bar-Komponente dient als Balken der für die Trennung zwischen der HeroSection und der Podcastlist-Section fungiert.
+
+\paragraph{Hero}
+Die Hero-Komponente enthält eine Sektion die aus einem Header, Paragraphen und einen Button besteht. Für den Button wurde der HTML tag \texttt{input} mit dem Typ \texttt{button} verwendet, welcher die \texttt{Id} von dem \texttt{div} aus der Datei \texttt{podcastLists} entnimmt und dorthin navigiert. Zusätzlich in der Hero-Sektion ist ein großes Bild, das sogenannte Hero-Bild.
+
+\begin{lstlisting}[label=lst:frontend-hero-image, language=html, caption=Implementation des Hero-Bilds]
+<img className={styles.mainPicture} src="./assets/hero_picture.png" alt="Hero Section"/>
+\end{lstlisting}
+
+\paragraph{Navbar}
+Die Navbar-Komponente beinhaltet ausschließlich ein HTML tag \texttt{a}, welcher als Titel der Website dient. Zusätzlich besitzt der tag den \texttt{href} (hypertext reference), welcher leer ist und nach jedem Klicken wird man wieder zurück an den Start der Website navigiert.
+
+\begin{lstlisting}[label=lst:frontend-navbar, language=html, caption=Implementation der Navbar]
+<a href="/" className={styles.mainHeader}>
+  Flosscaster
+</a>
+\end{lstlisting}
+
+\paragraph{Podcast List}
+Die \texttt{Podcastlist}-Komponente ist dafür zuständig, eine Liste von Podcast-Episoden anzuzeigen und dem User die Möglichkeit zu geben, neue Episoden hochzuladen. Diese interagiert mit dem Backend, um Episoden abzurufen und neue Episoden zu speichern.
+
+Folgende Funktionalitäten sind in der \textit{podcast list} enthalten:
+
+\begin{itemize}
+  \item \textbf{State Management}: Die Komponente verwendet React Hooks, wie. z.B \texttt{useState} oder \texttt{useEffect,} um den Zustand von Variablen zu verwalten und speichern.
+  \item \textbf{Wichtige Funktionen}:
+  \begin{itemize}
+    \item \texttt{handleOpen()} / \texttt{handleClose()}: Funktionen, um das Upload-Formular ein- bzw. auszublenden.
+    \item \texttt{handleSumbit(event)}: Wird beim Absenden des Upload-Formulars ausgelöst. Bereitet die Daten als \texttt{FormData} vor und sendet die per POST-Methode an den Backend-Endpunkt \texttt{/api/create}. Zum Schluss setzt er die Formularfelder zurück aktualisiert die Episodenliste bei Erfolg.
+    \item \texttt{WorkspaceEpisodes()}: Ruft die Liste der Episoden vom Backend-Endpunkt \texttt{/api/list} ab und aktualisiert den \texttt{episodes}-Zustand mit den empfangenen Daten.
+  \end{itemize}
+\item \textbf{Aufbau der UI}: Eine Überschrift, einen Button der bedingt das UploadFormular anzeigen lässt. Dieser besteht aus drei Eingabefeldern mit Titel, Beschreibung und eine Audio Datei, die mit einem \textit{Submit Button} versendet wird.
+\item \textbf{Aufbau der Podcast-Episoden UI}: Jede Episode wird als \textit{Karte} \texttt{podcastCard} dargestellt. Die zeigt den Titel, die Beschreibung und die abspielbare Audio Datei, vom Backend-Endpunkt \texttt{/api/getupload} streamt.
+\item \textbf{Backend-Kommunikation}: Die Basis-URL für Backend-Anfragen wird über die Umgebungsvariable \texttt{REACT\_APP\_BACKEND\_HOST} konfiguriert oder verwendet standardmäßig \texttt{localhost.} Die Kommunikation erfolgt über den Port 1111.
+\end{itemize}
+
+\paragraph{App}
+Die App-Komponente ist die Hauptkomponente. Sie definiert die grundlegende Struktur und das Layout der Webseite, indem sie verschiedene wiederverwendbare Unterkomponenten importiert und anordnet.
+
+\subsubsection{Styling \small{(Sascha Gav)}}
+\paragraph{\texttt{module.css}}
+Die Verwendung von \texttt{.module.css} ist eine spezielle Methode, um sicherzustellen, dass die in dieser Datei definierten Stile nur auf diesem spezifischen Teil der Webseite angewendet werden und nicht versehentlich das Aussehen anderer Teile ändern. \texttt{styles} wird zu einem Objekt, das wir verwenden können, um diese spezifischen Stile anzuwenden.
+
+\paragraph{\texttt{Index.css}}
+\begin{sloppypar}
+Die Datei \texttt{index.css} \textit{stylt} die gesamte Anwendung. Es wird einen dunklen Hintergrund gesetzt, Browser-Default-Abstände entfernt, sanftes Scroll-Verhalten bei \textit{In-Page-Links} aktiviert und ein globales \textit{Font-Fallback} (System- und Webfonts) definiert.
+\end{sloppypar}
+
+\paragraph{\texttt{Bar.module.css}}
+Die Bar-Komponente \texttt{bar.module.css} fungiert in unserem Layout als Platzhalter und Trennelement zwischen dem Hero-Bereich und der Episoden-Liste. Ihre zentrale Klasse \texttt{.container} sorgt für einen halb-transparenten Hintergrund mit abgerundeten Ecken und genug Innenabstand.
+
+\paragraph{\texttt{Navbar.module.css}}
+Das Navbar-Modul \texttt{navbar.module.css} definiert das Styling der Navigationsleiste. Die Klasse \texttt{.navbar} richtet den Navigations-Container als Flexbox aus, zentriert alle enthaltenen Elemente horizontal und fügt oben einen Abstand von 30 Pixeln hinzu. Innerhalb dieses Containers übernimmt die Klasse \texttt{.mainHeader} die Gestaltung des Textes: große, fette Schrift in Weiß, keine Unterstreichung und ein sanfter Hover-Effekt, der die Schrift minimal vergrößert und den Hand-Cursor anzeigt, wenn man drauf zeigt.
+
+\paragraph{\texttt{Hero.module.css}}
+Im Hero-Modul \texttt{hero.module.css} wird der Fullscreen-Bereich an oberster Stelle umgesetzt. Die Klasse \texttt{.container} teilt den Bereich mittels Flexbox in einen linken Textbereich und einen rechten Bildbereich, beide in voller Browserhöhe. Der linke Bereich, also der Textbereich \texttt{.content} stapelt Überschrift, Untertitel und \textit{Hear now}-Button vertikal und zentriert sie auf der linken Seite, getrennt durch etwas Abstand zum Bild. Die Klassen \texttt{.mainHeader} und \texttt{.mainParagraph} legen Schriftart, Farben und Abstände für Titel und Untertitel fest. Der Button (\texttt{.heroButton}) erhält eine abgerundete Form, eine passende Farbe und ein sanftes Leuchten beim Hover. Das Bild selbst \texttt{.mainPicture} füllt seinen Bereich ohne Verzerrung aus. Dekorative Blur-Elemente im Hintergrund \texttt{.bottomBlur} erzeugen mit großer Fläche und Unschärfe einen modernen Tiefen­effekt.
+
+\paragraph{\texttt{PodcastLists.module.css}}
+\begin{sloppypar}
+Schließlich beschreibt das \texttt{PodcastLists}-Modul \texttt{podcastLists.module.css} das Design der Episoden­übersicht und des zugehörigen Upload-Fensters. \texttt{.container} stapelt die einzelnen Podcast-Karten vertikal mit gleichmäßigem Abstand. 
+Eine Überschrift im Stil der Klasse (\texttt{.mainHeader}) führt in die Listen-sektion ein. Jede Karte \texttt{.podcastCard} erhält durch halbtransparente Hinter­grund­farbe, Unschärfe („Glas-Effekt“), stark abgerundete Ecken und ein leichtes Skalieren bei Hover einen modernen Look. Innerhalb der Karten definieren die Klassen \texttt{.podcastTitle} und \texttt{.podcastDescription} die Schriftgrößen, die Schriftdicke und Abstände für Titel und Beschreibung. Der Audio-Player wird über eine eigene Klasse (audio) leicht abgerundet. 
+Die Button Klasse \texttt{.showUploadBtn} gestaltet den \textit{Upload Episode}- Button, der das Upload-Fenster öffnet. Er ist in der Akzentfarbe der Webseite gestaltet und zeigt beim Hover einen Schatten und einen gedrückten Zustand beim Klick. 
+Das Upload-Fenster selbst wird von der Klasse \texttt{.top} komplett im Viewport zentriert und erhält eine dunkle, fast deckende Hintergrundfarbe, passend zum Stil der restlichen Webseite, und feste Breiten- und Höhenbegrenzung. Die Textfelder im Fenster sind voll­breit, mit hohem Kontrast und ausreichendem Innen­abstand definiert. 
+\end{sloppypar}
+
+Abschließend \textit{stylt} \texttt{.submit} den \textit{Submit}-button in Akzentfarbe und \texttt{.close} positioniert das Schließ-Icon oben rechts im Uploadfenster.
+
+
+
 \subsection{Backend \small{(Benedikt Zundel)}}
 Als Kommunikationsschnittstelle mit dem Frontend haben wir uns für ein minimales restful \textit{application programming interface} (API) entschieden. Dafür haben wir unterliegend \texttt{flask}, insbesondere \texttt{flask-restful}, verwendet. Diese API legt die wesentlichen Endpunkte, die verwendet werden, um Podcast Episoden abzufragen und neue zu erstellen, frei. Zum sichern der Episoden verwenden wir eine dynamische Lösung, mit der Metadaten in einer leichtgewichtigen \texttt{SQLite} Datenbank abgelegt werden und die zugehörigen Audiodaten im Dateisystem gespeichert werden, mit einem Verweis auf den Pfad in der Datenbank. Rückwirkend wird entsprechend der Eintrag aus der Datenbank geholt und die Datei aus dem Dateisystem geladen.
 

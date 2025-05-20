@@ -9,4 +9,5 @@
 *.fdb_latexmk
 *.lol
 *.out
+*.lof
 
