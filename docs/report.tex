@@ -7,10 +7,14 @@
 
 \graphicspath{{assets/}}
 
-\title{Podcast Management System "FLOSScaster" \\
-	\begin{large}
-	WP-Seminar "Quelloffene Software in der modernen Informatik" Projekt
-	\end{large} \\
+\title{Podcast Management System "FLOSScaster"\\
+  {%
+    \singlespacing
+    \begin{large}
+    WP-Seminar "Quelloffene Software in der modernen Informatik" Projekt
+    \end{large}\\
+    \small Unter Beaufsichtigung von Dr. Chris Zimmermann\\
+  }
   \begin{normalsize}
     Frankfurt University of Applied Sciences
   \end{normalsize}
@@ -18,8 +22,8 @@
 
 % TODO sort alph. when all names are included
 \author{
-  dkar001 \\
-  \texttt{-}
+  Karaman, Deniz \\
+  \texttt{deniz.karaman@stud.fra-uas.de}
   \and
   Lepore, Dominik \\
   \texttt{dominik.lepore@stud.fra-uas.de}
@@ -27,7 +31,7 @@
   Fluegel, Dwipa \\
   \texttt{dwipa.fluegel@stud.fra-uas.de}
   \and
-  Michael Filatoff \\
+  Filatoff, Michael \\
   \texttt{michael.filatoff@stud.fra-uas.de}
   \and
   Brychcy, Patryk \\
@@ -125,11 +129,11 @@ Für die statische Code‐Analyse im Backend haben wir die integrierte Inspektio
 
 Dank dieser statischen Prüfung konnten wir gezielt Code-Stellen verbessern – etwa fehlende Imports ergänzen, Methoden korrekt deklarieren und PEP 8-konforme Bezeichner verwenden. Durch die frühzeitige Erkennung und Behebung dieser Probleme haben wir die Qualität, Wartbarkeit und Lesbarkeit unserer Anwendung weiter gesteigert.
 
-\section{Mockup-Design und Gestaltung \small{(Patryk Brychcy \& Michel Filatoff)}}
+\section{Mockup-Design und Gestaltung \small{(Patryk Brychcy \& Michael Filatoff)}}
 \subsection{Planung}
 In einem ersten Planungsschritt entschieden wir gemeinsam, dass die gesamte Funktionalität auf einer einzigen HTML-Webseite umgesetzt werden soll. Die Seite sollte so einfach, übersichtlich und benutzerfreundlich wie möglich gestaltet werden.
 
-Daraufhin habe wir mithilfe des Online-Design-Tools \textit{Figma} das erste Mockup erstellt. Dieses visuelle Konzept stellt eine minimalistische und funktionale Benutzeroberfläche dar, die sich auf die wesentlichen Elemente konzentriert.
+Daraufhin haben wir mithilfe des Online-Design-Tools \textit{Figma} das erste Mockup erstellt. Dieses visuelle Konzept stellt eine minimalistische und funktionale Benutzeroberfläche dar, die sich auf die wesentlichen Elemente konzentriert.
 
 \begin{figure}[h]
   \caption{Figma Design der Landingpage}
@@ -143,7 +147,7 @@ Daraufhin habe wir mithilfe des Online-Design-Tools \textit{Figma} das erste Moc
   \includegraphics[width=0.3\textwidth]{flosscaster2.png}
 \end{figure}
 
-Die Webseite wurde dabei so angelegt, dass es flexibel ausbaufähig bleibt, das \textit{Flosscaster}-Logo oben am Rand ist eine Navigationsleiste (\texttt{Navbar),} wo man auch in der Zukunft eine Benutzerverwaltung integrieren könnte.
+Die Webseite wurde dabei so angelegt, dass es flexibel ausbaufähig bleibt, das \textit{Flosscaster}-Logo oben am Rand ist eine Navigationsleiste (\texttt{Navbar}), wo man auch in der Zukunft eine Benutzerverwaltung integrieren könnte.
 
 Die Webseite soll den Nutzern folgendes ermöglichen:
 
@@ -213,7 +217,7 @@ Durch gezielte Anpassungen in den CSS-Dateien konnte das Design final umgesetzt 
 \begin{figure}[h]
   \caption{Implementiertes Design der Podcast-Episoden}
   \centering
-  \includegraphics[width=0.9\textwidth]{flosscaster4.png}
+  \includegraphics[width=\textwidth]{flosscaster4.png}
 \end{figure}
 
 \section{Technische Dokumentation}
@@ -512,10 +516,10 @@ Um mit unserer Mastodon-Instanz zu kommunizieren wird eine API-Verbindung gebrau
 
 \subsubsection{Probleme}
 \begin{sloppypar}
-Während meiner Forschung bezüglich der Moglichkeiten, wie man Podcast-Episoden automatisch ankündigt bin ich auf folgenden Blog-Post gestoßen: \url{https://c20d.blog/posts/2023/03/tootrss-utility/}. In diesem wurde ein Utility-Tool vorgestellt, bei dem neuhinzugefügte RSS-Items automatisch auf einen Mastodon-Account veröffentlicht werden. Dadurch das der Podcast auf einem RSS-Feed aufgebaut ist, hatte mich dieser Ansatz neugierig gemacht und ich hatte vor unsere eigene Version zu programmieren, welche auf SQLite aufgebaut war und nicht auf Amazons DynamoDB. Hier wurde das Paket feedparser benutzt, welches wie oben von Alwin beschrieben gewisse Probleme mit sich brachte, die sich im Verlauf der Entwicklung problematisch herausgestellt hat. Das Umgehen des RSS-Feedes hatte sich dadurch Problematisch gemacht, da das Paket beim parsing ein FeedParserDictionary ausgibt, wodurch sich das sortieren des RSS-Feedes auf das neuste Item mittels sorted() als nicht möglich erwieß. Ein Ansatz, der hier funktioniert hätte, welcher vom Autor des obig genannten Blog-Postes benutzt wurde, war das kreieren einer eigenen Klasse um gewisse Hilffunktionen aufzurufen, welchen ich als unverhältnissmäßigen Aufwand ansah. Nachdem ich mir einige Gedanken gemacht hatte und mir Alwins Code angeschaut habe, da er verantwortlich war für den RSS-Feed, musste ich mir eingestehen, dass das Design und die vorangehensweise sich als schlicht ineffizient herausgestellt hat. Dadurch das der Feed von uns verwaltet wird und die neuen Podcast-Episoden als neue Items in den Feed hinzufügt werden mit allen relevanten informationen für das veröffentlichen eines Tootes, hatte es weitaus mehr Sinn ergeben, ein Skript zu bauen, welches den gleichen Input benutzt und direkt danach aufgerufen wird.
+  Während meiner Forschung bezüglich der Moglichkeiten, wie man Podcast-Episoden automatisch ankündigt bin ich auf folgenden Blog-Post gestoßen: \url{https://c20d.blog/posts/2023/03/tootrss-utility/}. In diesem wurde ein Utility-Tool vorgestellt, bei dem neuhinzugefügte RSS-Items automatisch auf einen Mastodon-Account veröffentlicht werden. Dadurch das der Podcast auf einem RSS-Feed aufgebaut ist, hatte mich dieser Ansatz neugierig gemacht und ich hatte vor unsere eigene Version zu programmieren, welche auf SQLite aufgebaut war und nicht auf Amazons DynamoDB. Hier wurde das Paket feedparser benutzt, welches wie oben von Alwin beschrieben gewisse Probleme mit sich brachte, die sich im Verlauf der Entwicklung problematisch herausgestellt hat. Das Umgehen des RSS-Feedes hatte sich dadurch Problematisch gemacht, da das Paket beim parsing ein FeedParserDictionary ausgibt, wodurch sich das sortieren des RSS-Feedes auf das neuste Item mittels \texttt{sorted()} als nicht möglich erwieß. Ein Ansatz, der hier funktioniert hätte, welcher vom Autor des obig genannten Blog-Postes benutzt wurde, war das kreieren einer eigenen Klasse um gewisse Hilffunktionen aufzurufen, welchen ich als unverhältnissmäßigen Aufwand ansah. Nachdem ich mir einige Gedanken gemacht hatte und mir Alwins Code angeschaut habe, da er verantwortlich war für den RSS-Feed, musste ich mir eingestehen, dass das Design und die vorangehensweise sich als schlicht ineffizient herausgestellt hat. Dadurch das der Feed von uns verwaltet wird und die neuen Podcast-Episoden als neue Items in den Feed hinzufügt werden mit allen relevanten informationen für das veröffentlichen eines Tootes, hatte es weitaus mehr Sinn ergeben, ein Skript zu bauen, welches den gleichen Input benutzt und direkt danach aufgerufen wird.
+  Da wir hier mit Zugangsdaten arbeiten, sollte diese Informationen als Umgebungsvariablen gespeichert werden. Während des entwickeln hatte ich hierfür eine \texttt{.env}-Datei benutzt, welche ich natürlich in einer \texttt{gitignore} inkludiert hatte.
 \end{sloppypar}
 
-Da wir hier mit Zugangsdaten arbeiten, sollte diese Informationen als Umgebungsvariablen gespeichert werden. Während des entwickeln hatte ich hierfür eine .env-Datei benutzt, welche ich natürlich in einer gitignore inkludiert hatte.
 
 \begin{lstlisting}[language=Python, caption=Vollständige Funktion des \textit{Autotootings}]
 def masttoot(title: str, url: str, description: str):
