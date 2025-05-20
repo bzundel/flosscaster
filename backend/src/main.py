@@ -214,6 +214,10 @@ class GetRSS(Resource):
                 description: RSS file was not found in the filesystem
         """
         feed_path = os.path.abspath(RSS_FILE)
+
+        if not os.path.exists(feed_path):
+            abort(404, error_message="Given rss file was not found")
+
         return send_file(feed_path)
 
 api.add_resource(List, "/api/list")
@@ -230,4 +234,3 @@ if __name__ == "__main__":
     rss_helper.create_template_if_not_exists()
 
     app.run(host="0.0.0.0", port = 1111, debug = True)
-
