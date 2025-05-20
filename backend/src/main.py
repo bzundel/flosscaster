@@ -172,7 +172,7 @@ class Create(Resource):
         con.commit()
         con.close()
 
-        rss_helper.add_episode_to_podcast(title, FRONTEND_URL, description, file_size) # TODO point to episode section (with # notation thingy)
+        rss_helper.add_episode_to_podcast(title, FRONTEND_URL, description, str(file_size)) # TODO point to episode section (with # notation thingy)
         masttoot.masttoot(title, FRONTEND_URL, description)
 
         return f"{new_id}", 200
