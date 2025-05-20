@@ -6,11 +6,11 @@ from typing import Union
 from gtts import gTTS
 from pydub import AudioSegment
 
-DATA_PATH = os.getenv("FLOSSCASTER_DATA_PATH")
+DATA_PATH = os.getenv("UPLOAD_PATH")
 MISSING = object()
 bitrate = 128   # in kbps
 
-def generate_random_ascii(length: int = 20, letters: bool = True, numbers: bool = True, punctuation: bool = False, printable: bool = False) -> str:
+def generate_random_ascii(length: int = 20, letters: bool = True, numbers: bool = True, punctuation: bool = False) -> str:
     characters = ''
     if letters:
         characters += string.ascii_letters
@@ -18,8 +18,6 @@ def generate_random_ascii(length: int = 20, letters: bool = True, numbers: bool 
         characters += string.digits
     if punctuation:
         characters += string.punctuation
-    if printable:
-        characters += string.printable
     return ''.join(random.choices(characters, k=length))
 
 def generate_random_ascii_path(file_name: Union[str, object] = MISSING) -> str:

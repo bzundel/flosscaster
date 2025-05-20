@@ -8,7 +8,7 @@ import sqlite3
 from backend.src.main import app
 
 DATABASE_FILE = os.getenv("DATABASE_FILE")
-DATA_PATH = os.getenv("FLOSSCASTER_DATA_PATH")
+DATA_PATH = os.getenv("UPLOAD_PATH")
 
 @pytest.fixture()
 def init_testing():
