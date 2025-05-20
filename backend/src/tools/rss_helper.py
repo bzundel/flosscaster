@@ -1,5 +1,4 @@
 import os
-import argparse
 import datetime
 import pytz
 from lxml import etree
