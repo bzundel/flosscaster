@@ -25,9 +25,6 @@ export const PodcastLists = () => {
   const handleOpen = () => setShowUpload(true);
   const handleClose = () => setShowUpload(false);
 
-  // Get environment variable for dev and docker compatibility or defauliting to localhost
-  const BACKEND_HOST = process.env.REACT_APP_BACKEND_HOST || "localhost";
-
   // Handles the submission of the new podcast episode form.
   // "e": represents the "event" object, that contains information about the submission
   const handleSumbit =async (e) => {   // "async": Might perform operations that take some time (like sending a file over the internet)
@@ -51,7 +48,7 @@ export const PodcastLists = () => {
 
     try{
       // Send the podcast data to the backend API endpoint for creation.
-      const response = await fetch(`http://${BACKEND_HOST}:1111/api/create`, { // "fetch": is to make requests to a server with 
+      const response = await fetch("/api/create", { // "fetch": is to make requests to a server with 
         // the url address of our backend server; "await": pauses the function here until the server responds
         method: "POST", // Use POST method to send data.
         body: formData, // Attach the object "formData" as the request body.
@@ -80,7 +77,7 @@ export const PodcastLists = () => {
   // Fetches(Requests) the list of podcast episodes from the backend API.
   const fetchEpisodes = async () => {
     // The server sends data as JSON
-    const response = await fetch(`http://${BACKEND_HOST}:1111/api/list`); //Backend URL Address.
+    const response = await fetch("/api/list"); //Backend URL Address.
     const data = await response.json(); // Converts this JSON data into a JavaScript object or array.
     // Update the "episodes" with the data received from the server.
     setEpisodes(data.reverse()); // Show newest first.
@@ -124,7 +121,7 @@ export const PodcastLists = () => {
             {ep.filepath && (
               <audio controls> {/* The html tag "audio" is a default html audio player */}
                 {/* Source of the audio file, constructed from backend and episode filepath. */}
-                <source src={`http://${BACKEND_HOST}:1111/api/get_upload/${ep.filepath}`} type="audio/mp3"/>
+                <source src={`/api/get_upload/${ep.filepath}`} type="audio/mp3"/>
                 Your browser does not support the audio element. {/* Fallback text, if audio element is not supported */}
               </audio>
             )}
