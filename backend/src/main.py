@@ -80,6 +80,7 @@ class List(Resource):
 
         return jsonify(podcasts)
 
+# obsolete
 class GetById(Resource):
     def get(self):
         """Returns all podcasts metadata in the database
