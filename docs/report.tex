@@ -363,7 +363,58 @@ class List(Resource):
 Um das Einrichten der Application auf einem Server zu vereinfachen, haben wir uns für die \textit{dockerisierung} (i.e. Befähigung mit Docker zu bauen) entschieden. Das Projekt lässt sich in zwei primäre Kategorien teilen: Das Frontend und das Backend. Beide Teile benötigen einen \texttt{Dockerfile}, der die jeweiligen Teile als isolierte \textit{Container} darstellt. Inhalt eines \texttt{Dockerfiles} ist eine Beschreibung des Bauvorgangs, der das Installieren von Abhängigkeiten, Kopieren von laufzeitrelevanten Dateien und Ausführen der Applikation beinhaltet. Um zu verhindern, dass mühselig zwei Container parallel gestartet werden müssen, haben wir \texttt{docker-compose} zur \textit{Container orchestrierung} eingesetzt. Mit \texttt{docker-compose} lassen sich multi-Container Anwendungen mit einem Kommando ausführen, indem ihr Verhalten in einer \texttt{YAML}-Datei definiert wird. Darin wird, im Falle dieses Projekts, beschrieben, welche Container gestartet, welche Ports offengelegt und welche Umgebungsvariablen verfügbar gemacht werden sollen. Anhand dieser Informationen werden die Container gebaut und isoliert gestartet. Eine direkte Kommunikation mit den Containern ist nur durch die freigegebenen Ports möglich, was zu einer erhöhten Sicherheit der Anwendung führt.
 
 \subsection{Deployment \small{(Benedikt Zundel)}}
-Didn't deploy yet, not much to say.
+Die Migration des Projekts in eine Produktionsumgebung war, trotz Einsatzes von Docker, nicht trivial. Als Hostingplattform bat sich ein Linux VPS mit Debian GNU/Linux 12 an, da dies mein persönlicher Server ist, auf dem das Standardwerkzeug wie Docker und eine Nginx reverse-proxy bereits installiert und konfiguriert ist. Ein naives Klonen des Repositorys und starten der Docker Container war zunächst erfolgreich und das Frontend war auch erreichbar, jedoch wies der Browser einige SSL-Probleme auf, da die Entwicklungsserver von Flask und React keine gute, native Unterstützung für verschlüsselte Verbindungen haben, ich jedoch ein SSL-Zertifikat von \textit{Let's Encrypt} einrichtete. Es folgte also eine Migration auf \texttt{gunicorn} im Falle des Backends und \texttt{serve} im Falle des Frontends.
+
+\subsubsection{Rekonfiguration der Container}
+\paragraph{Gunicorn}
+Der Kontrast des Bau- und Ausführprozesses zwischen Entwicklungsumgebung und Produktionsumgebung hielt sich im Bereich des Backends gering. Die relevanten Änderungen beschränken sich auf das Installieren des \texttt{gunicorn} Pakets mittles \texttt{pip} und dessen Verwendung zum starten der API, im Gegensatz zum Flask Entwicklungsserver.
+
+\begin{lstlisting}[caption=Unterschiede im Backend Dockerfile]
+-CMD ["python", "src/main.py"]
++ENV PYTHONPATH=src
++
++CMD ["gunicorn", "--bind", "0.0.0.0:1111", "src.main:app"]
+\end{lstlisting}
+
+Die Umgebungsvariable \texttt{PYTONPATH} muss mitgeliefert werden, sodass die Module, auf die \texttt{src/main.py} verweist, gefunden werden.
+
+\paragraph{Serve}
+Die Herangehensweise von \texttt{serve}, einem kleinen Webserver aus der \texttt{nodejs}-Welt, ist ein wenig anders. Es wird erwartet, dass statische Dateien angeboten werden, weshalb das \texttt{React} Projekt erst mittels \texttt{npm run build} gebaut wird. Dieser Prozess baut das Projekt in einen Ordner \texttt{build}, welcher dann zum hosten des Dienstes verwendet werden kann.
+
+\begin{lstlisting}[caption=Unterschiede im Frontend Dockerfile]
++RUN npm install -g serve
+...
+-CMD ["npm", "start"]
++RUN npm run build
++
++CMD ["serve", "-s", "build", "-l", "3000"]
+\end{lstlisting}
+
+\subsubsection{\texttt{Nginx} Konfiguration}
+Durch das hosten von Front- und Backend in Webservern, die einen Port freigeben, über die die Dienste erreibar sind, statt direkt statische Dateien zu liefern, lag die Lösung via \texttt{Nginx} mehrere \textit{proxy passes} einzurichten nahe. Mit dieser Konfiguration wird Verkehr, der an die eingerichtete Subdomain geschickt wird, an die entsprechenden Ports weitergeleitet.
+
+\begin{lstlisting}[label=lst:nginx-config, caption=\texttt{Nginx} \textit{proxy pass} Konfiguration]
+server {
+        server_name flosscaster.bzun.de;
+
+        location / {
+                proxy_pass http://127.0.0.1:3000;
+        }
+
+        location /api {
+                proxy_pass http://127.0.0.1:1111;
+        }
+
+        location /rss {
+                proxy_pass http://127.0.0.1:1111/rss;
+        }
+
+        ... # ssl configurations
+}
+\end{lstlisting}
+
+Aus Listing \ref{lst:nginx-config} ist zu entnehmen, dass Anfragen an den \texttt{/} Endpunkt an das Frontend, welches unter Port \texttt{3000} läuft, weiterzuleiten sind. Anfragen an den Endpunkt beginnend mit \texttt{/api} werden entsprechend an das Backend weitergeleitet und dort verarbeitet. Eine Sonderregelung hat der Endpunkt \texttt{/rss}, der einen direkten Endpunkt auf der API abruft, um die rohe RSS-Feed Datei zu liefern, die, beispielsweise, von einem Aggregator verwendet werden kann. 
+
 
 \subsection[RSS-Feed Generator \small{(Alwin Zimmermann)}]{RSS-Feed Generator \small{(Alwin Zimmermann)\footnote{Ich erkläre hiermit, dass ich bei der Erstellung dieses Projektes Unterstützung von ChatGPT, einem KI-gestützten Sprachmodell von OpenAI, in Anspruch genommen habe. Alle Inhalte wurden von mir überprüft und bearbeitet.}}}
 
