@@ -421,7 +421,7 @@ Aus Listing \ref{lst:nginx-config} ist zu entnehmen, dass Anfragen an den \textt
 Das Ziel des Generators ist es, dass ein sogenannter Podcatcher den RSS Feed unseres Podcasts einlesen kann. Der RSS Feed muss hierfür von unserem Server als .XML (oder .rss) bereitgestellt werden. Bei einem RSS Feed gibt es einige wichtige Punkte zu beachten, die für den Aufbau eines syntaktisch richtigen Feeds beachtet werden müssen. Eine XML-Datei hat eine Baumstruktur, im Kopf stehen Infos wie: XML-Version, Encoding, RSS-Version.
 
 \subsubsection{Struktur des RSS Feeds}
-Nach dem Kopf steht die Channel-Sektion, in der der Channel die wichtigsten Werte erhält. Diese wären:
+Nach dem Kopf steht die Channel-Sektion, in der der Channel die wichtigsten Werte zum RSS feed speichert. Diese wären:
 \begin{itemize}
     \item Titel
     \item Link zur Webseite
@@ -482,6 +482,7 @@ Als Input-Werte benötigt es lediglich:
     \item einen Titel als String
     \item eine URL zu der Folge, die hinzugefügt werden möchte
     \item eine Beschreibung der Folge
+    \item Größe der Datei in Bytes
 \end{itemize}
 
 Das Veröffentlichungsdatum wird als aktuelles Datum gewählt, da das Script automatisiert ausgeführt werden soll. Zudem wird der Audio-Typ auf MP3 festgelegt, da wir das FLAC-Format von Anfang an verworfen haben. Mithilfe von \texttt{lxml} wird nun ein neues \texttt{<item>} Objekt hinzugefügt mit den angegebenen Werten.
@@ -494,7 +495,7 @@ etree.SubElement(new_item, 'description').text = description
 etree.SubElement(new_item, 'pubDate').text = new_episode_pubDate
 enclosure = etree.SubElement(new_item, 'enclosure')
 enclosure.set('url', url)
-enclosure.set('length', str(os.path.getsize(os.path.join(os.environ['UPLOAD_PATH'], os.path.basename(url)))))
+enclosure.set('length', length)
 enclosure.set('type', 'audio/mpeg')
 \end{lstlisting}
 
@@ -502,20 +503,13 @@ Auch wird im Kopf das \texttt{lastBuildDate} auf den aktuellen Moment abgeänder
 
 \begin{lstlisting}[language=Python, caption=Vollständige Funktion des RSS-Feed Generators]
 def add_episode_to_podcast(title: str, url: str, description: str, length: str):
-    if not os.path.exists(os.path.dirname(RSS_FILE)):
-        os.makedirs(os.path.dirname(RSS_FILE), exist_ok = True) # create file path if it doesn't exist
-
-    if not os.path.isfile(RSS_FILE):
-        with open(RSS_FILE, "w") as f:
-            f.write(RSS_TEMPLATE) # create rss boilerplate of no feed exists
-
     with open(RSS_FILE, 'rb') as f:
         feed_content = f.read()
 
     # XML-Parser initialisieren
     root = etree.fromstring(feed_content)
 
-    # Neue Episode hinzufuegen
+    # Neue Episode hinzufügen
     new_episode_pub_date = datetime.datetime.now(pytz.timezone('Europe/Berlin')).strftime('%a, %d %b %Y %H:%M:%S %z')
 
     # Erstelle ein neues Item
@@ -528,15 +522,15 @@ def add_episode_to_podcast(title: str, url: str, description: str, length: str):
     enclosure.set('length', length)
     enclosure.set('type', 'audio/mpeg')
 
-    # Fuege das neue Item zum Channel hinzu
+    # Füge das neue Item zum Channel hinzu
     channel = root.find('channel')
     channel.append(new_item)
-    
+
     # Aktualisiere lastBuildDate
     last_build_date = channel.find('lastBuildDate')
     last_build_date.text = datetime.datetime.now(pytz.timezone('Europe/Berlin')).strftime('%a, %d %b %Y %H:%M:%S %z')
 
-    # Speichern des aktualisierten Feeds mit Zeilenumbruechen und Einrueckungen
+    # Speichern des aktualisierten Feeds mit Zeilenumbrüchen und Einrückungen
     with open(RSS_FILE, 'wb') as f:
         f.write(etree.tostring(root, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
 \end{lstlisting}
