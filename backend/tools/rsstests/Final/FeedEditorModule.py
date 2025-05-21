@@ -4,7 +4,7 @@ import datetime
 import pytz
 from lxml import etree
 
-def add_episode_to_podcast(title: str, url: str, description: str):
+def add_episode_to_podcast(title: str, url: str, description: str, length: str):
     # Verzeichnis und Dateiname
     directory = './rss'  # Aktuelles Verzeichnis mit dem Unterordner 'rss'
     filename = 'podcast.xml'  # Name der RSS-Datei
@@ -29,7 +29,7 @@ def add_episode_to_podcast(title: str, url: str, description: str):
     etree.SubElement(new_item, 'pubDate').text = new_episode_pubDate
     enclosure = etree.SubElement(new_item, 'enclosure')
     enclosure.set('url', url)
-    enclosure.set('length', str(os.path.getsize(os.path.join(os.environ['UPLOAD_PATH'], os.path.basename(url)))))
+    enclosure.set('length', length)
     enclosure.set('type', 'audio/mpeg')
 
     # Füge das neue Item zum Channel hinzu

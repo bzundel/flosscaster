@@ -10,7 +10,7 @@ from flasgger import Swagger
 from tools import rss_helper, masttoot
 
 DATABASE_FILE = os.getenv("DATABASE_FILE")
-UPLOAD_PATH = "uploads"
+UPLOAD_PATH = os.getenv("UPLOAD_PATH")
 FRONTEND_URL = os.getenv("FRONTEND_URL")
 RSS_FILE = os.getenv("RSS_FILE")
 
@@ -80,6 +80,7 @@ class List(Resource):
 
         return jsonify(podcasts)
 
+# obsolete
 class GetById(Resource):
     def get(self):
         """Returns all podcasts metadata in the database
@@ -146,7 +147,7 @@ class Create(Resource):
                     type: integer
                 examples:
                     1
-            404:
+            400:
                 description: Something went wrong in the process of creating the podcast
         """
         title = request.form.get("title")
@@ -161,6 +162,7 @@ class Create(Resource):
         filename = f"{str(uuid.uuid4())}{extension}"
         file_path = os.path.join(UPLOAD_PATH, filename)
         audio_file.save(file_path)
+        file_size = os.path.getsize(file_path)
 
         date = datetime.datetime.now().strftime("%c")
         con = sqlite3.connect(DATABASE_FILE)
@@ -170,8 +172,10 @@ class Create(Resource):
         con.commit()
         con.close()
 
-        rss_helper.add_episode_to_podcast(title, FRONTEND_URL, description) # TODO point to episode section (with # notation thingy)
-        masttoot.masttoot(title, FRONTEND_URL, description)
+        rss_helper.add_episode_to_podcast(title, FRONTEND_URL, description, str(file_size))
+
+        if not os.getenv("MASTODON_ACCESS_TOKEN") is None:
+            masttoot.masttoot(title, FRONTEND_URL, description)
 
         return f"{new_id}", 200
 
@@ -192,7 +196,10 @@ class GetFileByFilename(Resource):
         """
         path = os.path.abspath(os.path.join(UPLOAD_PATH, filename))
 
-        return send_file(path)
+        if not os.path.exists(path):
+            abort(404, error_message="Given file was not found")
+
+        return send_file(path, mimetype="audio/mpeg")
 
 class GetRSS(Resource):
     def get(self):
@@ -207,7 +214,10 @@ class GetRSS(Resource):
                 description: RSS file was not found in the filesystem
         """
         feed_path = os.path.abspath(RSS_FILE)
-        print(feed_path)
+
+        if not os.path.exists(feed_path):
+            abort(404, error_message="Given rss file was not found")
+
         return send_file(feed_path)
 
 api.add_resource(List, "/api/list")
@@ -216,9 +226,11 @@ api.add_resource(Create, "/api/create")
 api.add_resource(GetFileByFilename, "/api/get_upload/<path:filename>")
 api.add_resource(GetRSS, "/rss")
 
+con = sqlite3.connect(DATABASE_FILE)
+cur = con.cursor()
+cur.execute("CREATE TABLE IF NOT EXISTS podcasts(id INTEGER PRIMARY KEY, title, description, date, filepath)")
+con.close()
+rss_helper.create_template_if_not_exists()
+
 if __name__ == "__main__":
-    con = sqlite3.connect(DATABASE_FILE)
-    cur = con.cursor()
-    cur.execute("CREATE TABLE IF NOT EXISTS podcasts(id INTEGER PRIMARY KEY, title, description, date, filepath)")
-    con.close()
     app.run(host="0.0.0.0", port = 1111, debug = True)

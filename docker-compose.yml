@@ -6,14 +6,16 @@ services:
     ports:
       - "1111:1111"
     environment:
-      DATABASE_FILE: ./flosscaster
-      UPLOAD_PATH: ./uploads
-      RSS_FILE: ./feed.xml
+      DATABASE_FILE: ${DATABASE_FILE:-./flosscaster}
+      UPLOAD_PATH: ${UPLOAD_PATH:-./uploads}
+      RSS_FILE: ${RSS_FILE:-./feed.xml}
       FRONTEND_URL: ${FRONTEND_URL:-localhost:3000}
+      MASTODON_CLIENT_KEY: ${MASTODON_CLIENT_KEY}
+      MASTODON_CLIENT_SECRET: ${MASTODON_CLIENT_KEY}
+      MASTODON_ACCESS_TOKEN: ${MASTODON_ACCESS_TOKEN}
+      MASTODON_BASE_URL: ${MASTODON_BASE_URL}
 
   frontend:
     build: ./frontend
     ports:
       - "3000:3000"
-    environment:
-      REACT_APP_BACKEND_HOST: localhost

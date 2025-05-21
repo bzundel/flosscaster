@@ -6,11 +6,11 @@ from typing import Union
 from gtts import gTTS
 from pydub import AudioSegment
 
-DATA_PATH = os.getenv("FLOSSCASTER_DATA_PATH")
+DATA_PATH = os.getenv("UPLOAD_PATH")
 MISSING = object()
 bitrate = 128   # in kbps
 
-def generate_random_ascii(length: int = 20, letters: bool = True, numbers: bool = True, punctuation: bool = False, printable: bool = False) -> str:
+def generate_random_ascii(length: int = 20, letters: bool = True, numbers: bool = True, punctuation: bool = False) -> str:
     characters = ''
     if letters:
         characters += string.ascii_letters
@@ -18,13 +18,11 @@ def generate_random_ascii(length: int = 20, letters: bool = True, numbers: bool 
         characters += string.digits
     if punctuation:
         characters += string.punctuation
-    if printable:
-        characters += string.printable
     return ''.join(random.choices(characters, k=length))
 
 def generate_random_ascii_path(file_name: Union[str, object] = MISSING) -> str:
     if file_name == MISSING:
-        file_name = generate_random_ascii();
+        file_name = generate_random_ascii()
     return os.path.join(DATA_PATH, file_name)
 
 def generate_mp3_tts(text_to_speech: str = "Test FLOSScast", lang: str = "de") -> str:
@@ -45,6 +43,7 @@ def generate_mp3_size(kilobyte: int = 2048, path: Union[str, object] = MISSING) 
         path = generate_random_ascii_path(generate_random_ascii())
     length = calculate_mp3_duration(kilobyte)
     silent_audio = AudioSegment.silent(duration=length * 1000)  # *1000 because it is in ms
+    path += ".mp3"
     silent_audio.export(path, format="mp3", bitrate=f"{bitrate}k")
     return path
 
@@ -52,5 +51,6 @@ def generate_mp3_duration(duration: int = 60, path: Union[str, object] = MISSING
     if path == MISSING:
         path = generate_random_ascii_path(generate_random_ascii())
     silent_audio = AudioSegment.silent(duration=duration * 1000)
+    path += ".mp3"
     silent_audio.export(path, format="mp3", bitrate=f"{bitrate}k")
     return path
