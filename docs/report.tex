@@ -684,6 +684,33 @@ def test_getrss_no_file(delete_rss, client):
             file.write(delete_rss) 
 \end{lstlisting}
 
+\subsection{Testplan}
+\begin{center}
+  \begin{tabularx}{\textwidth}{|X|l|X|l|}
+    \hline
+    \textbf{Test-Name} & \textbf{Attributes} & \textbf{Components} & \textbf{Capabilities} \\
+    \hline
+    test\_create\_podcast & reliable, usable & POST, main.Create, os, tests.random\_file\_generator & upload podcast \\
+    \hline
+    test\_create\_not\_audio & reliable, error, safety & POST, main.Create, os, tests.random\_file\_generator & upload podcast \\
+    \hline
+    test\_list\_empty\_db & edge case & main.List & see all podcasts \\
+    \hline
+    test\_list & correctness, wholeness & main.List & see all podcasts \\
+    \hline
+    test\_list\_with\_param & safety, security & main.List & wrong usage \\
+    \hline
+    test\_getFileByFilename & fast, precice & main.getFileByName & search file on server \\
+    \hline
+    test\_getFileByFilename\_wrong & fast, error detection & main.getFileByName, tests.random\_file\_generator & search for wrong file \\
+    \hline
+    test\_getrss & fast, functional, easy to use & main.getRSS & retrieve current RSS \\
+    \hline
+    test\_getrss\_no\_file & error detection, reliability & main.getRSS & get RSS if no RSS is saved \\
+    \hline
+  \end{tabularx}
+\end{center}
+
 \subsection{Static Code-Analyse (Deniz Karaman)}
 Für die statische Code‐Analyse im Backend haben wir die integrierte Inspektions-Engine von \texttt{PyCharm (JetBrains)} eingesetzt. Dabei konnten wir verschiedene Probleme im Code identifizieren. Zu den häufigsten Befunden gehörten unter anderem:
 
@@ -698,7 +725,6 @@ Für die statische Code‐Analyse im Backend haben wir die integrierte Inspektio
 \end{itemize}
 
 Dank dieser statischen Prüfung konnten wir gezielt Code-Stellen verbessern – etwa fehlende Imports ergänzen, Methoden korrekt deklarieren und PEP 8-konforme Bezeichner verwenden. Durch die frühzeitige Erkennung und Behebung dieser Probleme haben wir die Qualität, Wartbarkeit und Lesbarkeit unserer Anwendung weiter gesteigert.
-
 
 \newpage
 
