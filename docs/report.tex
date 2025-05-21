@@ -114,21 +114,6 @@ Jeder Eintrag auf dem Board ist als GitHub Issue angelegt und hat folgende Felde
 
 Durch diese enge Verzahnung von Issue-Tracking, Code-Repositories und agilen Meetings erreichen wir eine hohe Transparenz, schnelle Feedback-Zyklen und eine stetige Verbesserung unseres Workflows.
 
-\section{Static Code-Analyse (Deniz Karaman)}
-Für die statische Code‐Analyse im Backend haben wir die integrierte Inspektions-Engine von \texttt{PyCharm (JetBrains)} eingesetzt. Dabei konnten wir verschiedene Probleme im Code identifizieren. Zu den häufigsten Befunden gehörten unter anderem:
-
-\begin{itemize}
-  \item Unresolved references
-  \item Method is not declared static
-  \item PEP 8 naming convention violation 
-  \item Redundant parentheses
-  \item Shadowing built-in names
-  \item Shadowing names from outer scopes
-  \item Using equality operators to compare with None
-\end{itemize}
-
-Dank dieser statischen Prüfung konnten wir gezielt Code-Stellen verbessern – etwa fehlende Imports ergänzen, Methoden korrekt deklarieren und PEP 8-konforme Bezeichner verwenden. Durch die frühzeitige Erkennung und Behebung dieser Probleme haben wir die Qualität, Wartbarkeit und Lesbarkeit unserer Anwendung weiter gesteigert.
-
 \section{Mockup-Design und Gestaltung \small{(Patryk Brychcy \& Michael Filatoff)}}
 \subsection{Planung}
 In einem ersten Planungsschritt entschieden wir gemeinsam, dass die gesamte Funktionalität auf einer einzigen HTML-Webseite umgesetzt werden soll. Die Seite sollte so einfach, übersichtlich und benutzerfreundlich wie möglich gestaltet werden.
@@ -543,6 +528,174 @@ def masttoot(title: str, url: str, description: str):
 \subsubsection{Gelerntes}
 
 Ich habe leider verhältnismäßig viel Zeit investiert in ein Design, das sich nachträglich als ineffizient herausgestellt hat während der Entwicklung, wenn es eine weitaus einfachere Lösung gab. Im Kontext eines Uni-Projektes sollte dies etwas weniger Konsequenzen haben, aber im zukünftigen Kontext der Industrie sind das redundante Personalkosten. Da ich selber bei einem IT-Dienstleister arbeite, jedoch im 1st-Level Support, ist dies für mich eine wertvolle Lektion, da es schwer ist bei einem Kunden gewisse Stunden zu rechtfertigen, wenn diese nicht effektiv genutzt werden.
+
+\section{Testbericht zum API-Testing \small{(Dominik Lepore)}}
+\subsection{Zielsetzung}
+
+Tests haben das Ziel, zu überprüfen, dass alle Funktionalitäten wie erwartet funktionieren. Um dies bei unserem Projekt umzusetzen, testen wir jeden von uns definierten REST-API-Endpunkt. Insgesamt haben wir vier API-Endpunkte definiert, die bereits in diesem Bericht detailliert dokumentiert wurden. Aus Gründen der Redundanz beschränken wir uns in diesem Abschnitt nur auf die Beschreibung der Test-Vorgehensweise und nicht auf die Funktionsweisen der Endpunkte selbst. 
+
+\subsection{Teststruktur}
+\begin{sloppypar}
+Die Testumgebung – inklusive aller Dateien und Konfigurationen – befindet sich im Verzeichnis \texttt{/flosscaster/backend/tests}. Dieses Verzeichnis beinhaltet auch eine \texttt{README.md} Datei, mit einer Anleitungen zur Einrichtung und Ausführung der Tests. 
+\end{sloppypar}
+
+Da wir die Python Bibliothek Flask zur Implementierung der API-Endpunkte benutzen, verwenden wir gemäß derer Empfehlung die Funktionalitäten aus der Pytest Bibliothek zum Testen. Pytest bietet umfangreiche Test-Features wie Fixtures und die Parametrisierung. Dies ermöglichte uns eine strukturierte und übersichtliche Teststruktur aufzubauen, welche leicht angepasst oder erweitert werden kann.  
+
+\subsection{Test-Fixtures}
+Alle Test-Fixtures haben wir in der Datei \texttt{conftest.py} hinterlegt. Dat ist die von Pytest empfohlene Datei, damit die automatische Testerkennung fehlerfrei funktioniert. 
+
+Eine typische Fixture zur Initialisierung der Testumgebung sieht folgendermaßen aus: 
+
+\begin{lstlisting}[language=Python, caption=Beispiel einer Fixture]
+@pytest.fixture() 
+def init_testing(): 
+    app.config.update({'TESTING': True}) 
+    if not os.path.exists(DATABASE_FILE): 
+        con = sqlite3.connect(DATABASE_FILE) 
+        cur = con.cursor() 
+        cur.execute("CREATE TABLE IF NOT EXISTS podcasts(id INTEGER PRIMARY KEY, title, description, date, filepath)") 
+        con.close() 
+    yield app 
+    app.config.update({'TESTING': False}) 
+\end{lstlisting}
+
+Diese Fixture Funktion kann von jedem Test aufgerufen werden. Sie initialisiert die Test-Datenbank und setzt die \texttt{TESTING}-flag auf \texttt{True}. Für das Testen von Flask-Objekten sollte man die \texttt{TESTING}-flag auf \texttt{True} setzen, um alle Test-Funktionen nutzen zu können. Fixtures haben den weiteren Vorteil, dass Sie nach der Ausführung des Tests noch Code ausführen kann. Das ist sehr nützlich, um für die Testumgebung spezifische Änderungen wieder rückgängig zu machen. In dem Code Beispiel nutzen wir direkt diese Funktionalität um die \texttt{TESTING}-flag im Anschluss wieder zurückzusetzen. Für das Projekt wurden noch weitere Test Fixtures definiert, diese werde ich später, bei Ihrer Verwendung in den jeweiligen Tests, zeigen und erklären. 
+
+\subsection{Tests}
+Die Tests werden in vier Kapiteln aufgelistet sein. Jedes Kapitel wird sich auf ein REST-API-Endpunkt beziehen. In jedem dieser Kapitel werden die Testmethoden genauer erläutert, wobei nicht nur die Funktionalität genannt wird, sondern auch die Beweggründe für die Gestaltung dieser Tests erklärt werden. Anschließend an den Kapiteln wird es auch ein Kapitel mit kleinen Testplänen geben, die nach James Whittaker’s Blogbeitrag “The 10 Minute Test Plan” gestaltet wurden \cite{whittaker-test-plan}.
+
+\subsubsection{\texttt{/api/create} Testen}
+Die Create Funktion lässt uns Audiodateien als Podcasts hochladen. Wir müssen mit dem Testen sicherstellen, dass der Upload funktioniert hat und ob eine Fehlermeldung auftritt, wenn eine falsche Datei gesendet wird. 
+
+\begin{lstlisting}[language=Python, caption=Test-Implementation von \texttt{/api/create}]
+@pytest.mark.parametrize("title, description, audio", [ 
+    ("First FLOSScast", "The very first flosscast", generate_mp3_tts("Hello to the very first flosscast episode.", lang="en")), 
+    (generate_random_ascii(length=10), generate_random_ascii(length=99), generate_mp3_size(1024)), 
+    (generate_random_ascii(length=24, letters=False, numbers =False, punctuation=True), generate_random_ascii(length=240, punctuation=True), generate_mp3_duration(30)) 
+]) 
+ 
+ 
+def test_create_podcasts(client, title, description, audio): 
+    response = client.post("/api/create", content_type="multipart/form-data", 
+                           data={ 
+        "title": title, 
+        "description": description, 
+        "audio": open(audio, 'rb') 
+    }) 
+    assert response.status_code == 200 
+\end{lstlisting}
+
+
+Für das Testen der Create Funktion benutzen wir die Parametrisierung Funktion, die Pytest uns zur Verfügung stellt. Die Parametrisierung umfasst die obere Hälfte des Codes und hat den nutzen, dass wir für mehrere Inputs direkt testen können. Für zufällige Audiodateien habe ich Hilfsfunktionen geschrieben, die sich unter \texttt{flosscaster/backend/tests/random\_file\_generator.py} einsehen lassen. Diese werden dann in der Parametrisierung erstellt und dann jeweils ihrer Variable zugewiesen. Somit haben wir im oberen Beispiel einen Datensatz mit dem man 3 mal testen kann.  Die Variablen aus der Parametrisierung kann man dem Testen übergeben und die Tests werden dann mehrfach ausgeführt. In unserem Fall drei mal. Bei der Gestaltung des Tests ergab es sich als äußert schwierig, die Audiodatei als Datei zu übergeben. Ein Pfad zu der Datei allein genügt nicht. Nach längerer Bemühung haben wir eine Lösung gefunden, die sogar sehr schlank und schick ist. 
+
+\begin{lstlisting}[language=Python, caption=Implementation der \texttt{client}-Fixture]
+@pytest.fixture() 
+def client(init_testing): 
+    with app.test_client() as client: 
+        yield client 
+\end{lstlisting}
+
+Vielleicht ist es Ihnen als Leser aufgefallen, in der Testfunktion war neben den Variablen aus der Parametrisierung auch eine \texttt{client} Variable aufgeführt. Diese Variable ist ein Fixture, genauso eine Fixture wie wir Sie im letzten Kapitel gezeigt haben. Fixtures gibt man als Funktionsparameter an den Test weiter. Die \texttt{client} Fixture ist für das Testen von REST-API-Schnittstellen äußerst hilfreich. Sie ermöglicht es GET und POST Requests simpel aufzurufen. Eine POST Anfrage haben wir soeben beim Testen der Create Funktion gesehen und viele weitere GET Anfragen werden mit Hilfe von \texttt{client} in den nächsten Tests noch folgen. 
+
+Natürlich reicht es beim Testen nicht nur aus, den gewollten und erwarteten Ablauf zu testen, man möchte auch testen, dass eine falsche Nutzung der Funktion erkannt und richtig behandelt wird. Dafür findet man im Repository noch eine weitere Testfunktion bei der ich diesmal eine Datei erstellt habe, die keine Audiodatei ist. Der Test überprüft ob in diesem Fall der Status Code 400, der für einen Fehler steht, als Antwort kommt. 
+
+\subsubsection{\texttt{/api/list} Testen}
+Die API-Schnittstelle List lässt sich um einiges einfacher als die zuvor beschriebene Create Schnittstelle, testen. List ist eine GET-Funktion, die keine Paramater annimmt. Als Antwort bekommt man eine JSON Liste mit allen Datenbankeinträgen. Zum Testen müssen wir nur 3 Szenarien überprüfen, um die gewünschte Funktionalität sicherzustellen. Diese drei Szenarien sind in drei Tests in der \texttt{test\_list.py} beschrieben.  
+
+\begin{lstlisting}[language=Python, caption=Test-Implementation von \texttt{/api/list}]
+def test_list(database_entry_id, client): 
+    response = client.get("/api/list") 
+    assert response.status_code == 200 
+    assert f"\"id\":{database_entry_id}".encode("utf8") in response.data 
+    assert b"\"title\":" in response.data 
+    assert b"\"date\":" in response.data 
+    assert b"\"description\":" in response.data 
+    assert b"\"filepath\":" in response.data 
+\end{lstlisting}
+
+Zuallererst gehen wir von einem normalen Aufruf der Funktion auf. Der Nutzer erwartet eine Liste mit Informationen zu allen Podcasts als Antwort. Um dies zu testen, nutzen wir die \texttt{database\_entry\_id} Fixture. Sie stellt sicher das mindestens ein Eintrag in der Datenbank eingetragen ist und gibt deren \texttt{id} zurück.  Damit lässt sich schon die Funktion testen, indem wir überprüfen, ob der Status-Code 200 übermittelt wird und ob alle Beschreibungen, die ein Podcast beinhaltet, übermittelt werden. Unter anderem überprüfen wir, ob der von unserer Fixture erstellte Eintrag vorhanden ist. Dies machen wir, indem wir für die \texttt{id} suchen, die von der \texttt{database\_entry\_id} Fixture übergeben wurde. 
+
+Beim zweiten Szenario übergeben wir falsche API-Aufrufe und erwarten den Status-Code 404. Wir hängen an den Aufruf einfach weitere Parameter an und checken den Status-Code. 
+
+\begin{lstlisting}[language=Python, caption=Test-Implementation von \texttt{/api/list} gegen eine leere Datenbank]
+def test_list_empty_db(empty_database, client): 
+    response = client.get("/api/list") 
+    assert response.status_code == 200 
+    assert b'[]' in response.data 
+\end{lstlisting}
+
+Das dritte Szenario ist für den Fall, dass die Liste leer ist. Dazu nutzen wir wieder eine Fixture. Die \texttt{empty\_database} Fixture erstellt, wie der Name schon hergibt, eine Datenbank ohne Einträge. Hier wollen wir für den Fall der Fälle überprüfen, ob sich die Funktion noch so verhält wie erwartet. Wir erwarten in diesem speziellen Fall eine leere JSON-Datei und den Status-Code 200, der für einen Erfolg des Funktionsaufrufes steht. 
+
+Mit diesen 3 getesteten Szenarien lassen sich so ziemlich alle Funktionalitäten der \texttt{List} Funktion garantieren.  
+
+\subsubsection{\texttt{GetFileByFileName} Testen}
+Die \texttt{getFileByFileName} Funktion sucht nach einer Datei, die mit dem an die Funktion übermittelten Namen übereinstimmt. Wir testen die zwei Szenarien, wenn ein richtiger Dateiname übergeben wird und wenn nicht.
+
+\begin{lstlisting}[language=Python, caption=Test-Implementation von \texttt{/api/get\_upload}]
+def test_getFileByFilename(upload_file, client): 
+    response = client.get(f"/api/get_upload/{upload_file}") 
+    assert response.status_code == 200 
+
+    assert "audio/mpeg" in response.headers["content-type"] 
+\end{lstlisting}
+
+Für das Testen ist eigentlich nur der erste Fall interessant, weil man mit einer Fixture erstmal die Datei im richtigen Verzeichnis erstellen muss und anschließend muss auch überprüft werden, ob die Datei eine Audiodatei ist. Um eine korrekte Ausführung sicherzustellen, erwarten wir den Status Code 200 und das die übermittelte Datei vom \texttt{content-type} audio/mpeg ist.
+
+Im zweiten Fall, bei dem ein falscher Dateiname übermittelt wird, überprüfen wir nur, ob der Status Code 404 als Antwort kommt. 
+
+\subsubsection{\texttt{GetRSS} Testen}
+
+Die \texttt{GetRSS} API-Schnittstelle ist nochmal eine Funktion, bei der nur die 2 Szenarien getestet werden, ob die angefragte Datei existiert oder nicht. Obwohl sich dieser Testablauf mit dem Testen von \texttt{GetFileByFileName} sehr ähnelt, hat das Programmieren dieser Test um einiges mehr Spaß gemacht. 
+
+\begin{lstlisting}[language=Python, caption=Test-Implementation von \texttt{/rss}]
+def test_getrss(create_rss, client): 
+    response = client.get("/rss") 
+    assert "application/xml" in response.headers["content-type"] 
+    assert response.status_code == 200 or response.status_code == 304 
+\end{lstlisting}
+
+Für den Testfall der korrekten Ausführung der Schnittstelle müssen wir mehr als nur den Status Code 200 überprüfen. Auch der Status Code 304 sagt eine erfolgreiche Ausführung aus, da dieser Code dafür steht, dass sich die Datei seit der letzten Anfrage nicht verändert hat. Außerdem mussten die Fixtures sicherstellen, dass eine RSS Datei existiert und gegebenenfalls eine neue erstellen. Zuallerletzt überprüfen wir auch, dass die Datei tatsächlich eine RSS Datei ist, dies machen wir in dem wir den \texttt{content-type} Header überprüfen. RSS Dateien haben den \texttt{content-type} \texttt{application/xml}. 
+
+\begin{lstlisting}[language=Python, caption=Fixture zum löschen des RSS-Feeds]
+@pytest.fixture() 
+def delete_rss(init_testing): 
+    rss_path = os.getenv("RSS_FILE") 
+    if os.path.exists(rss_path): 
+        file = open(rss_path, "r") 
+        rss_file = file.read() 
+        file.close() 
+        os.remove(rss_path) 
+        return rss_file 
+    return "failure" 
+\end{lstlisting}
+
+Für den letzten Fall will ich nochmal eine Fixture zeigen. Diese Fixture löscht die vorhandene RSS-Feed Datei, aber speichert vorher den Inhalt ab. Dieser Inhalt wird dem Test, der unten auch aufgeführ ist, übergeben, damit er im Nachhinein die RSS Datei wiederherstellt.  
+
+\begin{lstlisting}[language=Python, caption=Test-Implementation von \texttt{/rss} bei nicht vorhandenem Feed]
+def test_getrss_no_file(delete_rss, client): 
+    response = client.get("/rss") 
+    assert response.status_code == 404 
+    if not delete_rss == "failure": 
+        rss_path = os.getenv("RSS_FILE") 
+        with open(rss_path, "w") as file: 
+            file.write(delete_rss) 
+\end{lstlisting}
+
+\subsection{Static Code-Analyse (Deniz Karaman)}
+Für die statische Code‐Analyse im Backend haben wir die integrierte Inspektions-Engine von \texttt{PyCharm (JetBrains)} eingesetzt. Dabei konnten wir verschiedene Probleme im Code identifizieren. Zu den häufigsten Befunden gehörten unter anderem:
+
+\begin{itemize}
+  \item Unresolved references
+  \item Method is not declared static
+  \item PEP 8 naming convention violation 
+  \item Redundant parentheses
+  \item Shadowing built-in names
+  \item Shadowing names from outer scopes
+  \item Using equality operators to compare with None
+\end{itemize}
+
+Dank dieser statischen Prüfung konnten wir gezielt Code-Stellen verbessern – etwa fehlende Imports ergänzen, Methoden korrekt deklarieren und PEP 8-konforme Bezeichner verwenden. Durch die frühzeitige Erkennung und Behebung dieser Probleme haben wir die Qualität, Wartbarkeit und Lesbarkeit unserer Anwendung weiter gesteigert.
+
 
 \newpage
 
