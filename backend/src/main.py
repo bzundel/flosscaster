@@ -152,8 +152,6 @@ class Create(Resource):
         title = request.form.get("title")
         description = request.form.get("description")
         audio_file = request.files.get("audio")
-        audio_file_read = audio_file.read()
-        file_size = len(audio_file_read)
 
         if audio_file.mimetype != "audio/mpeg":
             abort(400, error_message="Invalid file format; must be audio/mpeg")
@@ -163,6 +161,7 @@ class Create(Resource):
         filename = f"{str(uuid.uuid4())}{extension}"
         file_path = os.path.join(UPLOAD_PATH, filename)
         audio_file.save(file_path)
+        file_size = os.path.getsize(file_path)
 
         date = datetime.datetime.now().strftime("%c")
         con = sqlite3.connect(DATABASE_FILE)
@@ -199,7 +198,7 @@ class GetFileByFilename(Resource):
         if not os.path.exists(path):
             abort(404, error_message="Given file was not found")
 
-        return send_file(path)
+        return send_file(path, mimetype="audio/mpeg")
 
 class GetRSS(Resource):
     def get(self):
@@ -226,11 +225,11 @@ api.add_resource(Create, "/api/create")
 api.add_resource(GetFileByFilename, "/api/get_upload/<path:filename>")
 api.add_resource(GetRSS, "/rss")
 
-if __name__ == "__main__":
-    con = sqlite3.connect(DATABASE_FILE)
-    cur = con.cursor()
-    cur.execute("CREATE TABLE IF NOT EXISTS podcasts(id INTEGER PRIMARY KEY, title, description, date, filepath)")
-    con.close()
-    rss_helper.create_template_if_not_exists()
+con = sqlite3.connect(DATABASE_FILE)
+cur = con.cursor()
+cur.execute("CREATE TABLE IF NOT EXISTS podcasts(id INTEGER PRIMARY KEY, title, description, date, filepath)")
+con.close()
+rss_helper.create_template_if_not_exists()
 
+if __name__ == "__main__":
     app.run(host="0.0.0.0", port = 1111, debug = True)
