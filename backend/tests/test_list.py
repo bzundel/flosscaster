@@ -1,7 +1,3 @@
-import os
-
-DATABASE_FILE = os.getenv("DATABASE_FILE")
-
 def test_list_empty_db(empty_database, client):
     response = client.get("/api/list")
     assert response.status_code == 200
