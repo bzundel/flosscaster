@@ -146,7 +146,7 @@ class Create(Resource):
                     type: integer
                 examples:
                     1
-            404:
+            400:
                 description: Something went wrong in the process of creating the podcast
         """
         title = request.form.get("title")
