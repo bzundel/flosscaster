@@ -22,6 +22,10 @@ Install all necessary Packages
 ```
 pip install pytest gtts pydub
 ```
+Create neccessary directories for testing
+```
+mkdir ./backend/tests/data
+```
 ## Execute test
 _at the moment the test_create test are failing_
 
