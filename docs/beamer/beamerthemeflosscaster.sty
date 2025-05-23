@@ -1,0 +1,84 @@
+\ProvidesPackage{beamerthemeflosscaster}
+\mode<presentation>
+
+\usepackage{xcolor}
+
+\setbeamercolor{title}{fg=white, bg=violet}
+\setbeamercolor{footer}{fg=white, bg=violet}
+
+\setbeamertemplate{title page} {
+	\vbox{}
+	\vfill{}
+	\begingroup
+		\centering
+		\ifx\inserttitlegraphic\@empty
+		\else
+			\inserttitlegraphic
+			\vspace{1em}
+		\fi
+
+		\begin{beamercolorbox}[rounded=true, shadow=true, center, sep=8pt]{title}
+			\usebeamerfont{title}\inserttitle\par
+		\end{beamercolorbox}
+		\ifx\insertsubtitle\@empty
+		\else
+			\vskip0.5em
+			{\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle\par}
+		\fi
+		\vskip1em
+
+		{\usebeamerfont{author}\insertauthor\par}
+		\vspace{1em}
+		{\usebeamerfont{institute}\insertinstitute\par}
+		\vspace{1em}
+		{\usebeamerfont{date}\insertdate\par}
+	\endgroup
+	\vfill
+}
+
+\setbeamertemplate{footline} {
+	\leavevmode%
+	\hbox {%
+		\begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1.125ex,leftskip=.3cm,rightskip=.3cm]{footer}%
+			\insertshorttitle
+		\end{beamercolorbox}%
+
+		\begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1.125ex,leftskip=.3cm,rightskip=.3cm plus1fil]{footer}%
+			\hfill\insertframenumber{} / \inserttotalframenumber
+		\end{beamercolorbox}%
+	}
+	\vskip0pt%
+}
+
+\AtBeginSection[]{
+  \begin{frame}
+    \vfill
+    \centering
+    \begin{beamercolorbox}[sep=10pt,center,shadow=true,rounded=true]{title}
+      \usebeamerfont{title}\insertsectionhead\par
+    \end{beamercolorbox}
+    \vfill
+  \end{frame}
+}
+
+\AtBeginSubsection[]{
+  \begin{frame}
+    \vfill
+    \centering
+    \begin{beamercolorbox}[sep=10pt,center,shadow=true,rounded=true]{title}
+      \usebeamerfont{title}\insertsubsectionhead\par
+    \end{beamercolorbox}
+    \vfill
+  \end{frame}
+}
+
+\AtBeginSubsubsection[]{
+  \begin{frame}
+    \vfill
+    \centering
+    \begin{beamercolorbox}[sep=10pt,center,shadow=true,rounded=true]{title}
+      \usebeamerfont{title}\insertsubsubsectionhead\par
+    \end{beamercolorbox}
+    \vfill
+  \end{frame}
+}
