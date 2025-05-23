@@ -20,7 +20,7 @@ source backend/tests/.env.test
 ```
 Install all necessary Packages
 ```
-pip install pytest gtts pydup
+pip install pytest gtts pydub
 ```
 ## Execute test
 _at the moment the test_create test are failing_
