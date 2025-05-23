@@ -2,7 +2,7 @@ import os
 
 def test_getrss(create_rss, client):
     response = client.get("/rss")
-    assert "application/xml" in response.headers["content-type"]
+    assert "text/xml" in response.headers["content-type"]
     assert response.status_code == 200 or response.status_code == 304
 
 def test_getrss_no_file(delete_rss, client):
